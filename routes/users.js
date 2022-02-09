@@ -1,115 +1,33 @@
 const express = require('express');
-var router = express.Router();
-var mysql = require('mysql');
+const router = express.Router();
 
+const usersDAO = require('../data/usersDAO');
 
-var connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'root',
-    database: 'cloudcomputing'
-});
-
-connection.connect((err) => {
-    if(err){
-      console.log(err.code);
-      console.log(err.fatal);
-    }
-});
-
-let query = "";
-
+const userDAO = new usersDAO();
 /* GET users page. */
-router.get('/', (req, res, next) => {
-  res.send('Base user page');
+
+router.get('/', async (req, res, next) => {
+    res.send(await userDAO.getAll()); 
 });
 
-router.get('/get', (req, res, next) => {
-    query = 'SELECT * FROM user';
-    
-    connection.query(query, function(err, result, fields){
-        if(err)
-        {
-            console.log(err.code);
-            console.log(err.message);
-        }
-        res.send(result);
-        console.log("Getting info from DB.")
-    });
-    
+router.get('/:id', async(req, res, next) => {
+    const result = await userDAO.getOne(req.params.id);
+    res.status(result.code).send(result);
 });
 
-router.get('/get/:id', (req, res, next) => {
-    query = `SELECT * FROM user WHERE id = '${req.params.id}'`;
-
-    connection.query(query, (err, result, fields) => {
-        if(err)
-        {
-            console.log(err.code);
-            console.log(err.message);
-            res.send(err.message);
-        }
-        else {
-            res.send(result);
-        }
-    });
+router.post('/new', async (req, res, next) => {
+    const result = await userDAO.create(req.body);
+    res.status(result.code).send(result);
 });
 
-router.post('/new', (req, res, next) => {
-    console.log(req.body);
-    query = `INSERT INTO user (name, username, password) VALUES ('${req.body.name}', '${req.body.username}', '${req.body.password}')`;
-    connection.query(query, (err) => {
-        if(err)
-        {
-            console.log(err.code);
-            console.log(err.message);
-        }
-        else
-        { 
-            console.log("Added default user to DB.");
-            res.send(201);
-        }
-    });
+router.put('/update/:id', async (req, res) => {
+    const result = await userDAO.update(req.body, req.params.id);
+    res.status(result.code).send(result);
 });
 
-router.put('/update/:id', (req, res) => {
-    console.log(req.params.id);
-    let id = req.params.id;
-    let user =  req.body;
-    query = `UPDATE user SET name = '${req.body.name}', username = '${req.body.username}', password = '${req.body.password}' WHERE id = ${id}`;
-    connection.query(query, (err) => {
-    if(err)
-    {
-        console.log(err.code);
-        console.log(err.message);
-    }
-    else
-    {
-        console.log("Updated user");
-        res.send(`User updated with the following info: \n${JSON.stringify(user)}`);
-    }
-    });
-    
-});
-
-router.delete('/delete/:id', (req, res) => {
-    console.log(req.params.id);
-    let id = req.params.id;
-    let user =  req.body;
-    query = `DELETE FROM user WHERE id = ${id}`;
-    connection.query(query, (err) => {
-    if(err)
-    {
-        console.log(err.code);
-        console.log(err.message);
-    }
-    else
-    {
-        console.log("Deleted user");
-        res.send(`User deleted with the following info: \n${JSON.stringify(user)}`);
-    }
-    });
-    
+router.delete('/delete/:id', async (req, res) => {
+    const result = await userDAO.delete(req.params.id);
+    res.status(result.code).send(result);
 });
 
 module.exports = router;
