@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
-const device_infoDAO = require('../data/device_infoDAO');
+const device_recordsDAO = require('../data/device_recordsDAO');
 
-const dao = new device_infoDAO();
+const dao = new device_recordsDAO();
 /* GET users page. */
 
 router.get('/', async (req, res, next) => {
