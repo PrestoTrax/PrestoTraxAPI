@@ -1,6 +1,5 @@
 const mysql = require('mysql');
-const locParser = require('./locationParser');
-
+const helperMethods = require('./helper_methods');
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -9,13 +8,13 @@ const connection = mysql.createConnection({
 });
 
 connection.connect((err) => {
-    if (err) {
+    if (!!err) {
         console.log(err.code);
         console.log(err.fatal);
     }
 });
 
-let locationParser = new locParser();
+const helper = new helperMethods();
 
 let query = '';
 
@@ -70,8 +69,8 @@ class device_recordsDAO {
 
     create(body) {
         return new Promise((resolve, reject) => {
-            let location = locationParser.getLocation(body.location);
-            query = `INSERT INTO device_records (owner_id, reported_lost, device_latitude, device_longitude, device_id) VALUES ('${body.owner_id}','${body.reported_lost}', '${location.latitude}', '${location.longitude}', '${body.device_id}')`;
+            let location = helper.getLocation(body.location);
+            query = `INSERT INTO device_records (owner_id, parent_device, reported_lost, device_latitude, device_longitude) VALUES ('${body.owner_id}', '${body.parent_device}', '${body.reported_lost}', '${location.latitude}', '${location.longitude}')`;
             connection.query(query, (err) => {
                 if (!!err) {
                     console.log(err.code);

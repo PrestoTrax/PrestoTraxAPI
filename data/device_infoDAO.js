@@ -1,5 +1,5 @@
 const mysql = require('mysql');
-const locParse = require('./locationParser');
+const helperMethods = require('./helper_methods');
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -13,7 +13,8 @@ connection.connect((err) => {
         console.log(err.fatal);
     }
 });
-const locationParser = new locParse();
+
+const helper = new helperMethods();
 
 let query = '';
 
@@ -89,7 +90,7 @@ class device_infoDAO {
 
     create(body) {
         return new Promise((resolve, reject) => {
-            let location = locationParser.getLocation(body.location);
+            let location = helper.getLocation(body.location);
             console.log(location);
             
             query = `INSERT INTO device_info (owner_id, device_latitude, device_longitude, moving) VALUES ('${body.owner_id}', '${location.latitude}', '${location.longitude}', '${body.moving}')`;
@@ -117,7 +118,8 @@ class device_infoDAO {
 
     update(body, id) {
         return new Promise((resolve, reject) => {
-            query = `UPDATE device_info SET device_latitude='${body.location.latitude}', device_longitude='${body.location.longitude}', pinged_at='${Date.now()}', moving=${body.moving} WHERE ID='${id}'`;
+            let location = helper.getLocation(body.location);
+            query = `UPDATE device_info SET device_latitude='${location.latitude}', device_longitude='${location.longitude}', pinged_at='${Date.now()}', moving=${body.moving} WHERE ID='${id}'`;
             connection.query(query, (err, result, fields) => {
                 if (!!err) {
                     console.log(err.message);

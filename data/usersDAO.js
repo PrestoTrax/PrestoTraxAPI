@@ -1,5 +1,5 @@
 const mysql = require('mysql');
-
+//const helperMethods = require('./helper_methods');
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -8,11 +8,13 @@ const connection = mysql.createConnection({
 });
 
 connection.connect((err) => {
-    if (err) {
+    if (!!err) {
         console.log(err.code);
         console.log(err.fatal);
     }
 });
+
+//const helper = new helperMethods();
 
 let query = '';
 
