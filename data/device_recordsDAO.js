@@ -1,5 +1,6 @@
 const mysql = require('mysql');
 const helperMethods = require('./helper_methods');
+
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -67,6 +68,54 @@ class device_recordsDAO {
             });
     }
 
+    getAllDeviceRecords(id){
+        return new Promise((resolve, reject) => {
+            query = `SELECT * FROM device_records WHERE parent_device = '${id}'`;
+            connection.query(query, (err, result, fields) => {
+                if (!!err) {
+                    console.log(err.code);
+                    console.log(err.message);
+                    reject({ code: 500, err });
+                } else if (Object.keys(result).length === 0) {
+                    reject({ code: 404, message: 'No devices with that ID' });
+                } else {
+                    console.log(result);
+                    resolve({ code: 200, result });
+                }
+            });
+        })
+            .then((result) => {
+                return result;
+            })
+            .catch((err) => {
+                return err;
+        });
+    }
+
+    getAllOwnedBy(id){
+        return new Promise((resolve, reject) => {
+            query = `SELECT * FROM device_records WHERE owner_id = '${id}'`;
+            connection.query(query, (err, result, fields) => {
+                if (!!err) {
+                    console.log(err.code);
+                    console.log(err.message);
+                    reject({ code: 500, err });
+                } else if (Object.keys(result).length === 0) {
+                    reject({ code: 404, message: 'No devices with that owner' });
+                } else {
+                    console.log(result);
+                    resolve({ code: 200, result });
+                }
+            });
+        })
+            .then((result) => {
+                return result;
+            })
+            .catch((err) => {
+                return err;
+        });
+    }
+
     create(body) {
         return new Promise((resolve, reject) => {
             let location = helper.getLocation(body.location);
@@ -93,27 +142,28 @@ class device_recordsDAO {
             });
     }
 
-    update(body, id) {
-        return new Promise((resolve, reject) => {
-            query = `UPDATE device_records SET username='${body.username}', email='${body.email}', password='${body.password}' WHERE ID='${id}'`;
-            connection.query(query, (err, result, fields) => {
-                if (!!err) {
-                    console.log(err.message);
-                    console.log(err.code);
-                    reject({ code: 500, message: err.message });
-                } else {
-                    console.log('Successful query.');
-                    resolve({ code: 200, message: 'Update successful.' });
-                }
-            });
-        })
-            .then((result) => {
-                return result;
-            })
-            .catch((err) => {
-                return err;
-            });
-    }
+    // update(body, id) {
+    //     return new Promise((resolve, reject) => {
+    //         query = `UPDATE device_records SET reported='${body.username}', email='${body.email}', password='${body.password}' WHERE ID='${id}'`;
+    //         connection.query(query, (err, result, fields) => {
+    //             if (!!err) {
+    //                 console.log(err.message);
+    //                 console.log(err.code);
+    //                 reject({ code: 500, message: err.message });
+    //             } else {
+    //                 console.log('Successful query.');
+    //                 resolve({ code: 200, message: 'Update successful.' });
+    //             }
+    //         });
+    //     })
+    //         .then((result) => {
+    //             return result;
+    //         })
+    //         .catch((err) => {
+    //             return err;
+    //         });
+    // }
+
     delete(id) {
         return new Promise((resolve, reject) => {
             query = `DELETE FROM device_records WHERE ID='${id}'`;

@@ -20,6 +20,11 @@ router.get('/user/:id', async(req, res, next) => {
     res.status(result.code).send(result);
 }); 
 
+router.get('/device/:id', async (req, res, next) => {
+    const result = await dao.getAllDeviceRecords(req.params.id);
+    res.status(result.code).send(result);
+})
+
 router.post('/new', async (req, res, next) => {
     const result = await dao.create(req.body);
     res.status(result.code).send(result);

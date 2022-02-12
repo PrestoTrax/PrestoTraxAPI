@@ -73,7 +73,7 @@ class device_infoDAO {
                     console.log(err.message);
                     reject({ code: 500, err });
                 } else if (Object.keys(result).length === 0) {
-                    reject({ code: 404, message: 'No device with that ID' });
+                    reject({ code: 404, message: 'No devices owned by a user with that ID' });
                 } else {
                     console.log(result);
                     resolve({ code: 200, result });
