@@ -1,165 +1,158 @@
-const mysql = require('mysql');
+// const mysql = require('mysql');
 const helperMethods = require('./helper_methods');
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'root',
-    database: 'prestotrax',
-});
+const fs = require('fs');
+const { Connection, Request } = require('tedious');
 
-connection.connect((err) => {
+const config = {
+    authentication: {
+        options: {
+            userName: 'ptadmin77',
+            password: '@dm1npr3stO13579',
+        },
+        type: 'default',
+    },
+    server: 'prestotrax.database.windows.net',
+    options: {
+        database: 'presto1',
+        encrypt: true,
+        trustServerCertificate: true,
+    },
+};
+
+const connection = new Connection(config);
+
+connection.on('connect', (err) => {
     if (!!err) {
-        console.log(err.code);
-        console.log(err.fatal);
+        console.log('There was an error connecting to the database.');
     }
 });
 
 const helper = new helperMethods();
 
-let query = '';
+connection.connect();
 
 class device_infoDAO {
-    getAll() {
-        return new Promise((resolve, reject) => {
-            query = 'SELECT * FROM device_info';
-            connection.query(query, (err, result, fields) => {
-                if (!!err) {
-                    console.log(err.code);
-                    console.log(err.message);
-                    reject({ code: 500, message: err.message });
+    async getAll() {
+        return await new Promise((resolve, reject) => {
+            const request = new Request(
+                `SELECT * FROM presto1.device_info`,
+                (err, rowCount, rows) => {
+                    if (err) {
+                        reject({ code: 500, message: err.message });
+                        console.error(err.message);
+                    } else {
+                        //console.log(rows);
+                        resolve({
+                            code: 200,
+                            queryResult: resultset,
+                        });
+                        console.log(`${rowCount} row(s) returned`);
+                    }
                 }
-                console.log('Getting info from DB.');
-                resolve({ code: 200, result });
+            );
+            let resultset = [];
+            request.on('row', (columns) => {
+                resultset.push(helper.getRow(columns));
             });
-        })
-            .then((result) => {
-                return result;
-            })
-            .catch((err) => {
-                return err;
-            });
+            connection.execSql(request);
+        }).catch((err) => err);
     }
 
     async getOne(id) {
-        return new Promise((resolve, reject) => {
-            query = `SELECT * FROM device_info WHERE id = '${id}'`;
-            connection.query(query, (err, result, fields) => {
-                if (!!err) {
-                    console.log(err.code);
-                    console.log(err.message);
-                    reject({ code: 500, err });
-                } else if (Object.keys(result).length === 0) {
-                    reject({ code: 404, message: 'No device with that ID' });
-                } else {
-                    console.log(result);
-                    resolve({ code: 200, result });
+        return await new Promise((resolve, reject) => {
+            const request = new Request(
+                `SELECT * FROM presto1.device_info WHERE Id = ${id}`,
+                (err, rowCount) => {
+                    if (err) {
+                        reject({ code: 500, message: err.message });
+                        console.error(err.message);
+                    } else {
+                        resolve({ code: 200, queryResult: resultset });
+                        console.log(`${rowCount} row(s) returned`);
+                    }
                 }
+            );
+            let resultset = [];
+            request.on('row', (columns) => {
+                resultset.push(helper.getRow(columns));
             });
-        })
-            .then((result) => {
-                return result;
-            })
-            .catch((err) => {
-                return err;
-            });
+            connection.execSql(request);
+        }).catch((err) => err);
     }
 
-    getAllOwnedBy(id){
-        return new Promise((resolve, reject) => {
-            query = `SELECT * FROM device_info WHERE owner_id = '${id}'`;
-            connection.query(query, (err, result, fields) => {
-                if (!!err) {
-                    console.log(err.code);
-                    console.log(err.message);
-                    reject({ code: 500, err });
-                } else if (Object.keys(result).length === 0) {
-                    reject({ code: 404, message: 'No devices owned by a user with that ID' });
-                } else {
-                    console.log(result);
-                    resolve({ code: 200, result });
+    async getAllOwnedBy(id){
+        return await new Promise((resolve, reject) => {
+            const request = new Request(`SELECT * FROM presto1.device_info WHERE OwnerId = '${id}'`, (err) => {
+                if(!!err){
+                    reject({code: 500, message: err.message});
+                }
+                else
+                {
+                    resolve({code: 200, queryResult: resultset})
                 }
             });
-        })
-            .then((result) => {
-                return result;
-            })
-            .catch((err) => {
-                return err;
-        });
+            let resultset = [];
+            request.on('row', (columns) => {
+                resultset.push(helper.getRow(columns));
+            });
+            connection.execSql(request);
+        }).catch((err) => err);
     }
 
-    create(body) {
-        return new Promise((resolve, reject) => {
+    async create(body) {
+        return await new Promise((resolve, reject) => {
             let location = helper.getLocation(body.location);
             console.log(location);
-            
-            query = `INSERT INTO device_info (owner_id, device_latitude, device_longitude, moving) VALUES ('${body.owner_id}', '${location.latitude}', '${location.longitude}', '${body.moving}')`;
-            connection.query(query, (err) => {
-                if (!!err) {
-                    console.log(err.code);
-                    console.log(err.message);
-                    reject({ code: 500, message: err.message });
-                } else {
-                    console.log('Added device to DB.');
-                    resolve({
-                        code: 201,
-                        message: 'Successfully added device to database',
-                    });
+            const request = new Request(
+                `INSERT INTO presto1.device_info (OwnerId, DeviceLatitude, DeviceLongitude, Moving) VALUES ('${body.owner_id}', '${location.latitude}', '${location.longitude}', '${body.moving}')`,
+                (err, rowCount) => {
+                    if (err) {
+                        reject({ code: 500, message: err.message });
+                        console.error(err.message);
+                    } else {
+                        console.log(`${rowCount} row(s) returned`);
+                        resolve({
+                            code: 201,
+                            message: 'A new device was added to the database',
+                        });
+                    }
                 }
-            });
-        })
-            .then((result) => {
-                return result;
-            })
-            .catch((err) => {
-                return err;
-            });
+            );
+            connection.execSql(request);
+        }).catch((err) => err);
     }
 
-    update(body, id) {
-        return new Promise((resolve, reject) => {
+    async update(body, id) {
+        return await new Promise((resolve, reject) => {
             let location = helper.getLocation(body.location);
-            query = `UPDATE device_info SET device_latitude='${location.latitude}', device_longitude='${location.longitude}', pinged_at='${Date.now()}', moving=${body.moving} WHERE ID='${id}'`;
-            connection.query(query, (err, result, fields) => {
-                if (!!err) {
-                    console.log(err.message);
-                    console.log(err.code);
-                    reject({ code: 500, message: err.message });
-                } else {
-                    console.log('Successful query.');
-                    resolve({ code: 200, message: 'Update successful.' });
+            const request = new Request(
+                `UPDATE presto1.device_info SET device_latitude='${
+                    location.latitude
+                }', device_longitude='${
+                    location.longitude
+                }', pinged_at='${Date.now()}', moving=${
+                    body.moving
+                } WHERE ID='${id}'`,
+                (err, rowCount) => {
+                    if (err) {
+                        console.error(err.message);
+                        reject({ code: 500, message: err.message });
+                    } else {
+                        console.log(`${rowCount} row(s) returned`);
+                        resolve({
+                            code: 204,
+                            message: 'Device successfully updated.',
+                        });
+                    }
                 }
-            });
-        })
-            .then((result) => {
-                return result;
-            })
-            .catch((err) => {
-                return err;
-            });
+            );
+        }).catch((err) => err);
     }
-    delete(id) {
-        return new Promise((resolve, reject) => {
-            query = `DELETE FROM device_info WHERE ID='${id}'`;
-            connection.query(query, (err, result) => {
-                if (!!err) {
-                    console.log(err);
-                    reject({ code: 500, message: err.message });
-                } else if (result.changedRows === 0) {
-                    reject({ code: 404, message: 'No device with that ID.' });
-                } else {
-                    console.log('Deletion Successful');
-                    console.log(result);
-                    resolve({ code: 204, message: 'Deletion successful.' });
-                }
-            });
-        })
-            .then((result) => {
-                return result;
-            })
-            .catch((err) => {
-                return err;
-            });
+
+    async delete(id) {
+        return await new Promise((resolve, reject) => {
+            
+        }).catch((err) => err);
     }
 }
 

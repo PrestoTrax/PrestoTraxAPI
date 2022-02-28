@@ -12,9 +12,23 @@
     "debug": "~2.6.9",
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
-    "jade": "^0.31.2",
+    "jade": "^0.29.0",
     "morgan": "~1.9.1",
     "mysql": "^2.18.1",
-    "nodemon": "^2.0.15"
-  }
+    "nodemon": "^2.0.15",
+    "tedious": "^14.3.0"
+  },
+  "description": "",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Max1mus7/PrestoTrax.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Max1mus7/PrestoTrax/issues"
+  },
+  "homepage": "https://github.com/Max1mus7/PrestoTrax#readme"
 }
