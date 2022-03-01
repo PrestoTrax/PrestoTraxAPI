@@ -146,12 +146,25 @@ class device_infoDAO {
                     }
                 }
             );
+            connection.execSql(request);
         }).catch((err) => err);
     }
 
     async delete(id) {
         return await new Promise((resolve, reject) => {
-            
+            const request = new Request(`DELETE FROM presto1.device_info WHERE Id = ${id}`, (err, rowCount) => {
+                if (err) {
+                    console.error(err.message);
+                    reject({ code: 500, message: err.message });
+                } else {
+                    console.log(`${rowCount} row(s) returned`);
+                    resolve({
+                        code: 200,
+                        message: 'Device successfully deleted.',
+                    });
+                }
+            });
+            connection.execSql(request);
         }).catch((err) => err);
     }
 }
