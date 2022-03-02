@@ -1,135 +1,139 @@
-// const mysql = require('mysql');
-// //const helperMethods = require('./helper_methods');
-// const connection = mysql.createConnection({
-//     host: 'localhost',
-//     user: 'root',
-//     password: 'root',
-//     database: 'prestotrax',
-// });
+const helperMethods = require('./helper_methods');
+const fs = require('fs');
+const { Connection, Request } = require('tedious');
 
-// connection.connect((err) => {
-//     if (!!err) {
-//         console.log(err.code);
-//         console.log(err.fatal);
-//     }
-// });
+const config = {
+    authentication: {
+        options: {
+            userName: 'ptadmin77',
+            password: '@dm1npr3stO13579',
+        },
+        type: 'default',
+    },
+    server: 'prestotrax.database.windows.net',
+    options: {
+        database: 'presto1',
+        encrypt: true,
+        trustServerCertificate: true,
+    },
+};
 
-// //const helper = new helperMethods();
+const connection = new Connection(config);
 
-// let query = '';
+connection.on('connect', (err) => {
+    if (!!err) {
+        console.log('There was an error connecting to the database.');
+    }
+});
 
-// class usersDAO {
-//     getAll() {
-//         return new Promise((resolve, reject) => {
-//             query = 'SELECT * FROM user';
-//             connection.query(query, (err, result, fields) => {
-//                 if (!!err) {
-//                     console.log(err.code);
-//                     console.log(err.message);
-//                     reject({code: 500, message: err.message});
-//                 }
-//                 console.log('Getting info from DB.');
-//                 resolve({ code: 200, result });
-//             });
-//         })
-//             .then((result) => {
-//                 return result;
-//             })
-//             .catch((err) => {
-//                 return err;
-//             });
-//     }
+const helper = new helperMethods();
 
-//     getOne(id) {
-//         return new Promise((resolve, reject) => {
-//             query = `SELECT * FROM user WHERE id = '${id}'`;
-//             connection.query(query, (err, result, fields) => {
-//                 if (!!err) {
-//                     console.log(err.code);
-//                     console.log(err.message);
-//                     reject({ code: 500, err });
-//                 } else if (Object.keys(result).length === 0) {
-//                     reject({ code: 404, message: 'No user with that ID' });
-//                 } else {
-//                     console.log(result);
-//                     resolve({ code: 200, result });
-//                 }
-//             });
-//         })
-//             .then((result) => {
-//                 return result;
-//             })
-//             .catch((err) => {
-//                 return err;
-//             });
-//     }
+connection.connect();
 
-//     create(body) {
-//         return new Promise((resolve, reject) => {
-//             query = `INSERT INTO user (username, email, password) VALUES ('${body.username}', '${body.email}', '${body.password}')`;
-//             connection.query(query, (err) => {
-//                 if (!!err) {
-//                     console.log(err.code);
-//                     console.log(err.message);
-//                     reject({code: 500, message: err.message});
-//                 } else {
-//                     console.log('Added user to DB.');
-//                     resolve({code: 201, message: 'Successfully added user to database'});
-//                 }
-//             });
-//         })
-//             .then((result) => {
-//                 return result;
-//             })
-//             .catch((err) => {
-//                 return err;
-//             });
-//     }
+class usersDAO {
+    async getAll() {
+        return await new Promise((resolve, reject) => {
+            const request = new Request(`SELECT * FROM presto1.users`, (err, rowcount, rows) => {
+                if(!!err)
+                {
+                    return reject({code: 500, message: err.message});
+                }
+                else
+                {
+                    return resolve({code: 200, queryResult: resultset});
+                }
+            });
+            let resultset = [];
+            request.on('row', (columns) => {
+                resultset.push(helper.getRow(columns));
+            });
+            connection.execSql(request);
+        }).catch((err) => err);
+    }
 
-//     update(body, id) {
-//         return new Promise((resolve, reject) => {
-//             query = `UPDATE user SET username='${body.username}', email='${body.email}', password='${body.password}' WHERE ID='${id}'`;
-//             connection.query(query, (err, result, fields) => {
-//                 if (!!err) {
-//                     console.log(err.message);
-//                     console.log(err.code);
-//                     reject({ code: 500, message: err.message });
-//                 } else {
-//                     console.log('Successful query.');
-//                     resolve({ code: 200, message: 'Update successful.' });
-//                 }
-//             });
-//         })
-//             .then((result) => {
-//                 return result;
-//             })
-//             .catch((err) => {
-//                 return err;
-//             });
-//     }
-//     delete(id) {
-//         return new Promise((resolve, reject) => {
-//             query = `DELETE FROM user WHERE ID='${id}'`;
-//             connection.query(query, (err, result) => {
-//                 if (!!err) {
-//                     console.log(err);
-//                     reject({ code: 500, message: err.message });
-//                 } else if (result.changedRows === 0) {
-//                     reject({ code: 404, message: 'No user with that ID.' });
-//                 } else {
-//                     console.log('Deletion Successful');
-//                     console.log(result);
-//                     resolve({ code: 204, message: 'Deletion successful.' });
-//                 }
-//             });
-//         })
-//             .then((result) => {
-//                 return result;
-//             })
-//             .catch((err) => {
-//                 return err;
-//             });
-//     }
-// }
+    async getOne(id) {
+        return await new Promise((resolve, reject) => {
+            const request = new Request(`SELECT * FROM presto1.users WHERE Id = ${id}`, (err, rowcount, rows) => {
+                if(!!err){
+                    return reject({code: 500, message: err.message});
+                }
+                else {
+                    return resolve({code: 200, queryResult: resultset});
+                }
+            });
+            let resultset = [];
+            request.on('row', (columns) => {
+                resultset.push(helper.getRow(columns));
+            });
+            connection.execSql(request);
+        }).catch((err) => err);
+    }
 
-// module.exports = usersDAO;
+    async create(body) {
+        return await new Promise((resolve, reject) => {
+            const request = new Request(
+                `INSERT INTO presto1.users (username, email, password) VALUES ('${body.username}', '${body.email}', '${body.password}')`,
+                (err, rowCount) => {
+                    if (err) {
+                        reject({ code: 500, message: err.message });
+                        console.error(err.message);
+                    } else {
+                        console.log(`${rowCount} row(s) returned`);
+                        resolve({
+                            code: 201,
+                            message: 'A new device was added to the database',
+                        });
+                    }
+                }
+            );
+            connection.execSql(request);
+        }).catch((err) => err);
+    }
+
+    update(body, id) {
+        return new Promise((resolve, reject) => {
+            query = `UPDATE user SET username='${body.username}', email='${body.email}', password='${body.password}' WHERE ID='${id}'`;
+            connection.query(query, (err, result, fields) => {
+                if (!!err) {
+                    console.log(err.message);
+                    console.log(err.code);
+                    reject({ code: 500, message: err.message });
+                } else {
+                    console.log('Successful query.');
+                    resolve({ code: 200, message: 'Update successful.' });
+                }
+            });
+        })
+            .then((result) => {
+                return result;
+            })
+            .catch((err) => {
+                return err;
+            });
+    }
+    delete(id) {
+        return new Promise((resolve, reject) => {
+            query = `DELETE FROM user WHERE ID='${id}'`;
+            connection.query(query, (err, result) => {
+                if (!!err) {
+                    console.log(err);
+                    reject({ code: 500, message: err.message });
+                } else if (result.changedRows === 0) {
+                    reject({ code: 404, message: 'No user with that ID.' });
+                } else {
+                    console.log('Deletion Successful');
+                    console.log(result);
+                    resolve({ code: 204, message: 'Deletion successful.' });
+                }
+            });
+        })
+            .then((result) => {
+                return result;
+            })
+            .catch((err) => {
+                return err;
+            });
+    }
+}
+
+module.exports = usersDAO;
