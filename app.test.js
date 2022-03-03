@@ -4,7 +4,9 @@ import request from 'supertest';
 import server from './index.js';
 
 jest.setTimeout(20000);
-
+//==================================================================================================================
+//                                           User Tests
+//==================================================================================================================
 describe('User API tests', () => {
     it('Requests a record of all users in the DB', async () => {
         const res = await request(server).get('/users');
@@ -60,11 +62,14 @@ describe('User API tests', () => {
         expect(res.body).toStrictEqual({});
     });
 });
-
+//==================================================================================================================
+//                                           Device Tests
+//==================================================================================================================
 describe('Device Info API tests', () => {
     it('Gets info of all devices within the DB', async () => {
         const res = await request(server).get('/devices');
         expect(res.status).toBe(200);
+        //expect(res.body).toContain(res.body.queryResult);
     });
 
     it('Gets info of a single specified device', async () => {
@@ -86,7 +91,7 @@ describe('Device Info API tests', () => {
     });
 
     it(`Gets all info of one user's devices`, async () => {
-        const res = await request(server).get('/devices');
+        const res = await request(server).get('/devices/user/8');
         expect(res.status).toBe(200);
     });
 
@@ -128,8 +133,51 @@ describe('Device Info API tests', () => {
         expect(res.body).toStrictEqual({});
     });
 });
+//==================================================================================================================
+//                                           Record Tests
+//==================================================================================================================
+describe('Device Record API tests', () => {
+    it('Gets info of all device records within the DB', async () => {
+        const res = await request(server).get('/records');
+        expect(res.status).toBe(200);
+    });
 
-// describe('Device Records API tests', () => {
+    it('Gets info of a single specified record', async () => {
+        const res = await request(server).get('/records/2');
+        expect(res.status).toBe(200);
+    });
 
-// });
+    it(`Gets all info of one user's devices`, async () => {
+        const res = await request(server).get('/records/user/8');
+        expect(res.status).toBe(200);
+    });
+    it(`Gets all of one device's records`, async () => {
+        const res = await request(server).get('/records/device/8');
+        expect(res.status).toBe(200);
+    });
+
+    it('Adds a device record to the DB', async () => {
+        const newDevice = {
+            "owner_id": 8,
+            "parent_device": 1,
+            "reported_lost": 0,
+            "location": {
+                "latitude": "33.512766 / N 33° 30' 45.956",
+                "longitude": "-112.126330 / W 112° 7' 34.786"
+            }
+        }
+        const res = await request(server).post('/records/new').send(newDevice);
+        expect(res.status).toBe(201);
+        expect(res.body.message).toBe('Successfully added device record to DB');
+    });
+    
+    it('Should delete the recently created device record within the DB', async () => {
+        const res1 = await request(server).get('/devices');
+        const lastId = res1.body.queryResult.at(-1).Id;
+        const res = await request(server).del( `/records/delete/${lastId}`);
+        expect(res.status).toBe(204);
+        expect(res.body).toStrictEqual({});
+    });
+
+});
 server.close();

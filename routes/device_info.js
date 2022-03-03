@@ -21,7 +21,6 @@ router.get('/user/:id', async(req, res, next) => {
 
 router.post('/new', async (req, res, next) => {
     const result = await dao.create(req.body);
-    console.log(result);
     res.status(result.code).send(result);
 });
 

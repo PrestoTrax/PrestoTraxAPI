@@ -57,7 +57,7 @@ class deviceInfoDAO {
         try{
             await this.connect();
             const result = await mssql.query`SELECT * FROM presto1.device_info WHERE OwnerId = ${id}`;
-            resultObj = {code: 201, queryResult: result.recordsets[0]};
+            resultObj = {code: 200, queryResult: result.recordsets[0]};
         } catch (err) {
             resultObj = {code: 500, message: err.message};
         } finally {

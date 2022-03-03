@@ -7,7 +7,7 @@ import logger from 'morgan';
 import indexRouter from './routes/index.js';
 import usersRouter from './routes/users.js';
 import device_infoRouter from './routes/device_info.js';
-//const device_recordsRouter = require('./routes/device_records.js');
+import device_recordsRouter from './routes/device_records.js';
 
 let app = express();
 
@@ -26,7 +26,7 @@ app.use(express.static(path.join(process.cwd(), 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/devices', device_infoRouter);
-//app.use('/records', device_recordsRouter);
+app.use('/records', device_recordsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

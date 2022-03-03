@@ -1,172 +1,115 @@
-// // const mysql = require('mysql');
-// const helperMethods = require('./helper_methods');
-// const fs = require('fs');
-// const { Connection, Request } = require('tedious');
+// const mysql = require('mysql');
+import HelperMethods from './helperMethods.js';
+//const fs = require('fs');
+import mssql from 'mssql';
 
-// const config = {
-//     authentication: {
-//         options: {
-//             userName: 'ptadmin77',
-//             password: '@dm1npr3stO13579',
-//         },
-//         type: 'default',
-//     },
-//     server: 'prestotrax.database.windows.net',
-//     options: {
-//         database: 'presto1',
-//         encrypt: true,
-//         trustServerCertificate: true,
-//     },
-// };
+const config = {
+    authentication: {
+        options: {
+            userName: 'ptadmin77',
+            password: '@dm1npr3stO13579',
+        },
+        type: 'default',
+    },
+    server: 'prestotrax.database.windows.net',
+    options: {
+        database: 'presto1',
+        encrypt: true,
+        trustServerCertificate: true,
+    },
+};
 
-// const connection = new Connection(config);
 
-// connection.on('connect', (err) => {
-//     if (!!err) {
-//         console.log('There was an error connecting to the database.');
-//     }
-// });
+const helper = new HelperMethods();
 
-// const helper = new helperMethods();
+class deviceRecordsDAO {
+    async connect() {
+        await mssql.connect(config);
+    }
+    async getAll() {
+        let resultObj;
+        try {
+            await this.connect();
+            const result = await mssql.query`SELECT * FROM presto1.device_records`;
+            resultObj = {code: 200, queryResult: result.recordsets[0]};
+        } catch (err) {
+            resultObj = {code: 500, message: err.message};
+        } finally {
+            await mssql.close();
+            return resultObj;
+        }
+    }
 
-// connection.connect();
+    async getOne(id) {
+        let resultObj;
+        try {
+            await this.connect();
+            const result = await mssql.query`SELECT * FROM presto1.device_records WHERE Id = ${id}`;
+            resultObj = {code: 200, queryResult: result.recordsets[0]};
+        } catch (err) {
+            resultObj = {code: 500, message: err.message};
+        } finally {
+            await mssql.close();
+            return resultObj;
+        }
+    }
 
-// class device_recordsDAO {
-//     async getAll() {
-//         return await new Promise((resolve, reject) => {
-//             const request = new Request(
-//                 `SELECT * FROM presto1.device_records`,
-//                 (err, rowCount, rows) => {
-//                     if (err) {
-//                         reject({ code: 500, message: err.message });
-//                         console.error(err.message);
-//                     } else {
-//                         //console.log(rows);
-//                         resolve({
-//                             code: 200,
-//                             queryResult: resultset,
-//                         });
-//                         console.log(`${rowCount} row(s) returned`);
-//                     }
-//                 }
-//             );
-//             let resultset = [];
-//             request.on('row', (columns) => {
-//                 resultset.push(helper.getRow(columns));
-//             });
-//             connection.execSql(request);
-//         }).catch((err) => err);
-//     }
+    async getAllOwnedBy(id) {
+        let resultObj;
+        try{
+            await this.connect();
+            const result = await mssql.query`SELECT * FROM presto1.device_records WHERE OwnerId = ${id}`;
+            resultObj = {code: 200, queryResult: result.recordsets[0]};
+        } catch (err) {
+            resultObj = {code: 500, message: err.message};
+        } finally {
+            await mssql.close();
+            return resultObj;
+        }
+    }
 
-//     async getOne(id) {
-//         return await new Promise((resolve, reject) => {
-//             const request = new Request(
-//                 `SELECT * FROM presto1.device_records WHERE Id = ${id}`,
-//                 (err, rowCount) => {
-//                     if (err) {
-//                         reject({ code: 500, message: err.message });
-//                         console.error(err.message);
-//                     } else {
-//                         resolve({ code: 200, queryResult: resultset });
-//                         console.log(`${rowCount} row(s) returned`);
-//                     }
-//                 }
-//             );
-//             let resultset = [];
-//             request.on('row', (columns) => {
-//                 resultset.push(helper.getRow(columns));
-//             });
-//             connection.execSql(request);
-//         }).catch((err) => err);
-//     }
+    async getAllDeviceRecords(id) {
+        let resultObj;
+        try{
+            await this.connect();
+            const result = await mssql.query`SELECT * FROM presto1.device_records WHERE ParentDevice = ${id}`;
+            resultObj = {code:200, queryResult: result.recordsets[0]};
+        } catch(err) {
+            resultObj = {code: 500, message: err.message};
+        } finally {
+            await mssql.close();
+            return resultObj;
+        }
+    }
 
-//     async getAllOwnedBy(id){
-//         return await new Promise((resolve, reject) => {
-//             const request = new Request(`SELECT * FROM presto1.device_records WHERE OwnerId = '${id}'`, (err) => {
-//                 if(!!err){
-//                     reject({code: 500, message: err.message});
-//                 }
-//                 else
-//                 {
-//                     resolve({code: 200, queryResult: resultset})
-//                 }
-//             });
-//             let resultset = [];
-//             request.on('row', (columns) => {
-//                 resultset.push(helper.getRow(columns));
-//             });
-//             connection.execSql(request);
-//         }).catch((err) => err);
-//     }
+    async create(body) {
+        let resultObj;
+        try {
+            await this.connect();
+            let location = helper.getLocation(body.location);
+            await mssql.query`INSERT INTO presto1.device_records (ParentDevice, OwnerId, ReportedLost, DeviceLatitude, DeviceLongitude) VALUES (${body.parent_device}, ${body.owner_id}, ${body.reported_lost}, ${location.latitude},${location.longitude})`;
+            resultObj = {code: 201, message: 'Successfully added device record to DB'};
+        } catch (err) {
+            resultObj = {code: 500, message: err.message};
+        } finally {
+            await mssql.close();
+            return resultObj;
+        }
+    }
 
-//     async create(body) {
-//         return await new Promise((resolve, reject) => {
-//             let location = helper.getLocation(body.location);
-//             console.log(location);
-//             const request = new Request(
-//                 `INSERT INTO presto1.device_records (OwnerId, ParentDevice, ReportedLost, DeviceLatitude, DeviceLongitude) VALUES ('${body.owner_id}', '${body.parent_device}', '${body.reported_lost}', '${location.latitude}', '${location.longitude}')`,
-//                 (err, rowCount) => {
-//                     if (err) {
-//                         reject({ code: 500, message: err.message });
-//                         console.error(err.message);
-//                     } else {
-//                         console.log(`${rowCount} row(s) returned`);
-//                         resolve({
-//                             code: 201,
-//                             message: 'A new device was added to the database',
-//                         });
-//                     }
-//                 }
-//             );
-//             connection.execSql(request);
-//         }).catch((err) => err);
-//     }
+    async delete(id) {
+        let resultObj;
+        try{
+            await this.connect();
+            await mssql.query`DELETE FROM presto1.device_records WHERE Id = ${id}`;
+            resultObj = {code: 204, message: 'Successfully removed device record from DB'};
+        } catch (err) {
+            resultObj = {code: 500, message: err.message};
+        } finally {
+            await mssql.close();
+            return resultObj;
+        }
+    }
+}
 
-//     async update(body, id) {
-//         return await new Promise((resolve, reject) => {
-//             let location = helper.getLocation(body.location);
-//             const request = new Request(
-//                 `UPDATE presto1.device_records SET device_latitude='${
-//                     location.latitude
-//                 }', device_longitude='${
-//                     location.longitude
-//                 }', pinged_at='${Date.now()}', moving=${
-//                     body.moving
-//                 } WHERE ID='${id}'`,
-//                 (err, rowCount) => {
-//                     if (err) {
-//                         console.error(err.message);
-//                         reject({ code: 500, message: err.message });
-//                     } else {
-//                         console.log(`${rowCount} row(s) returned`);
-//                         resolve({
-//                             code: 204,
-//                             message: 'Device successfully updated.',
-//                         });
-//                     }
-//                 }
-//             );
-//             connection.execSql(request);
-//         }).catch((err) => err);
-//     }
-
-//     async delete(id) {
-//         return await new Promise((resolve, reject) => {
-//             const request = new Request(`DELETE FROM presto1.device_records WHERE Id = ${id}`, (err, rowCount) => {
-//                 if (err) {
-//                     console.error(err.message);
-//                     reject({ code: 500, message: err.message });
-//                 } else {
-//                     console.log(`${rowCount} row(s) returned`);
-//                     resolve({
-//                         code: 200,
-//                         message: 'Device successfully deleted.',
-//                     });
-//                 }
-//             });
-//             connection.execSql(request);
-//         }).catch((err) => err);
-//     }
-// }
-
-// module.exports = device_recordsDAO;
+export default deviceRecordsDAO;
