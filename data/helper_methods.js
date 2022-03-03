@@ -1,4 +1,4 @@
-class helper_methods {
+class HelperMethods {
     getLocation(jsonObj) {
         return {
             latitude: jsonObj.latitude.replace(/\'/g, "\'\'"),
@@ -17,4 +17,4 @@ class helper_methods {
     }
 }
 
-module.exports = helper_methods;
+export default HelperMethods;

@@ -1,13 +1,17 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 
-const usersDAO = require('../data/usersDAO');
+import usersDAO from '../data/usersDAO.js';
 
 const userDAO = new usersDAO();
+await userDAO.connect();
 /* GET users page. */
 
 router.get('/', async (req, res, next) => {
-    res.send(await userDAO.getAll()); 
+    await userDAO.connect();
+    const result = await userDAO.getAll(); 
+    console.log(result);
+    res.status(result.code).send(result);
 });
 
 router.get('/:id', async(req, res, next) => {
@@ -30,4 +34,4 @@ router.delete('/delete/:id', async (req, res) => {
     res.status(result.code).send(result);
 });
 
-module.exports = router;
+export default router;

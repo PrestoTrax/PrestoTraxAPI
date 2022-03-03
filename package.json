@@ -3,10 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www.js",
-    "test": "node ./bin/www.js"
+    "start": "node index.js --experimental-specifier-resolution=node",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "dependencies": {
+    "@jest/globals": "^27.5.1",
     "body-parser": "^1.19.1",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
@@ -14,9 +15,11 @@
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
     "jade": "^0.29.0",
+    "jest": "^27.5.1",
     "morgan": "~1.9.1",
+    "mssql": "^8.0.2",
     "nodemon": "^2.0.15",
-    "tedious": "^14.3.0"
+    "supertest": "^6.2.2"
   },
   "description": "",
   "main": "app.js",
@@ -24,6 +27,7 @@
     "type": "git",
     "url": "git+https://github.com/Max1mus7/PrestoTrax.git"
   },
+  "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
