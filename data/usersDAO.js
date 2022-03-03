@@ -25,11 +25,16 @@ class usersDAO {
         await mssql.connect(config);
     }
     async getAll() {
+        let resultObj;
         try {
+            await this.connect();
             const result = await mssql.query`SELECT * FROM presto1.users`;
-            return {code: 200, queryResult: result.recordsets[0]};
+            resultObj = {code: 200, queryResult: result.recordsets[0]};
         } catch (err) {
-            return {code: 500, message: err.message};
+            resultObj = {code: 500, message: err.message};
+        } finally {
+            await mssql.close();
+            return resultObj;
         }
     }
 

@@ -12,3 +12,4 @@ describe('/users endpoint', () => {
         expect(res.status).toBe(200);
     });
 });
+server.close();
