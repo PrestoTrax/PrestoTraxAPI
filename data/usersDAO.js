@@ -33,16 +33,16 @@ connection.connect();
 class usersDAO {
     async getAll() {
         return await new Promise((resolve, reject) => {
-            const request = new Request(`SELECT * FROM presto1.users`, (err, rowcount, rows) => {
-                if(!!err)
-                {
-                    return reject({code: 500, message: err.message});
+            const request = new Request(
+                `SELECT * FROM presto1.users`,
+                (err, rowcount, rows) => {
+                    if (!!err) {
+                        return reject({ code: 500, message: err.message });
+                    } else {
+                        return resolve({ code: 200, queryResult: resultset });
+                    }
                 }
-                else
-                {
-                    return resolve({code: 200, queryResult: resultset});
-                }
-            });
+            );
             let resultset = [];
             request.on('row', (columns) => {
                 resultset.push(helper.getRow(columns));
@@ -53,14 +53,16 @@ class usersDAO {
 
     async getOne(id) {
         return await new Promise((resolve, reject) => {
-            const request = new Request(`SELECT * FROM presto1.users WHERE Id = ${id}`, (err, rowcount, rows) => {
-                if(!!err){
-                    return reject({code: 500, message: err.message});
+            const request = new Request(
+                `SELECT * FROM presto1.users WHERE Id = ${id}`,
+                (err, rowcount, rows) => {
+                    if (!!err) {
+                        return reject({ code: 500, message: err.message });
+                    } else {
+                        return resolve({ code: 200, queryResult: resultset });
+                    }
                 }
-                else {
-                    return resolve({code: 200, queryResult: resultset});
-                }
-            });
+            );
             let resultset = [];
             request.on('row', (columns) => {
                 resultset.push(helper.getRow(columns));
@@ -90,31 +92,28 @@ class usersDAO {
         }).catch((err) => err);
     }
 
-    update(body, id) {
-        return new Promise((resolve, reject) => {
-            query = `UPDATE user SET username='${body.username}', email='${body.email}', password='${body.password}' WHERE ID='${id}'`;
-            connection.query(query, (err, result, fields) => {
-                if (!!err) {
-                    console.log(err.message);
-                    console.log(err.code);
-                    reject({ code: 500, message: err.message });
-                } else {
-                    console.log('Successful query.');
-                    resolve({ code: 200, message: 'Update successful.' });
+    async update(body, id) {
+        return await new Promise((resolve, reject) => {
+            const request = new Request(
+                `UPDATE user SET username='${body.username}', email='${body.email}', password='${body.password}' WHERE ID='${id}'`,
+                (err, rowCount, rows) => {
+                    if (!!err) {
+                        console.log(err.message);
+                        console.log(err.code);
+                        reject({ code: 500, message: err.message });
+                    } else {
+                        console.log('Successful query.');
+                        resolve({ code: 200, message: 'Update successful.' });
+                    }
                 }
-            });
-        })
-            .then((result) => {
-                return result;
-            })
-            .catch((err) => {
-                return err;
-            });
+            );
+            connection.execSql(request);
+        }).catch((err) => err); 
     }
-    delete(id) {
+
+    async delete(id) {
         return new Promise((resolve, reject) => {
-            query = `DELETE FROM user WHERE ID='${id}'`;
-            connection.query(query, (err, result) => {
+            const request = new Request(`DELETE FROM user WHERE ID='${id}'`,(err, rowCount, rows) => {
                 if (!!err) {
                     console.log(err);
                     reject({ code: 500, message: err.message });
@@ -126,13 +125,8 @@ class usersDAO {
                     resolve({ code: 204, message: 'Deletion successful.' });
                 }
             });
-        })
-            .then((result) => {
-                return result;
-            })
-            .catch((err) => {
-                return err;
-            });
+            connection.execSql(request);    
+        }).catch((err) => err);
     }
 }
 
