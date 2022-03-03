@@ -6,15 +6,15 @@ class HelperMethods {
         };
     }
 
-    getRow(columns) {
-        return columns.reduce(
-            (obj, col) => ({
-                ...obj,
-                [col.metadata.colName]: col.value,
-            }),
-            {}
-        );
-    }
+    // getRow(columns) {
+    //     return columns.reduce(
+    //         (obj, col) => ({
+    //             ...obj,
+    //             [col.metadata.colName]: col.value,
+    //         }),
+    //         {}
+    //     );
+    // }
 }
 
 export default HelperMethods;

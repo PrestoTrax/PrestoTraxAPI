@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node index.js --experimental-specifier-resolution=node",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage"
   },
   "dependencies": {
     "@jest/globals": "^27.5.1",

@@ -1,14 +1,13 @@
 import express from 'express';
-const router = express.Router();
-
 import usersDAO from '../data/usersDAO.js';
 
+const router = express.Router();
 const userDAO = new usersDAO();
 /* GET users page. */
 
 router.get('/', async (req, res, next) => {
     const result = await userDAO.getAll(); 
-    console.log(result);
+    //console.log(result);
     res.status(result.code).send(result);
 });
 
