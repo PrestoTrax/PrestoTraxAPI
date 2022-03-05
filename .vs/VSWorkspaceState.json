@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\.dist",
+    "\\.github",
+    "\\data",
+    "\\public",
+    "\\routes",
+    "\\views"
+  ],
+  "SelectedNode": "\\.dist",
+  "PreviewInSolutionExplorer": false
+}
