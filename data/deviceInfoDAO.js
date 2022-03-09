@@ -29,9 +29,9 @@ class deviceInfoDAO {
         try {
             await this.connect();
             const result = await mssql.query`SELECT * FROM presto1.device_info`;
-            resultObj = {code: 200, queryResult: result.recordsets[0]};
+            resultObj = { code: 200, queryResult: result.recordsets[0] };
         } catch (err) {
-            resultObj = {code: 500, message: err.message};
+            resultObj = { code: 500, message: err.message };
         } finally {
             await mssql.close();
             return resultObj;
@@ -42,10 +42,11 @@ class deviceInfoDAO {
         let resultObj;
         try {
             await this.connect();
-            const result = await mssql.query`SELECT * FROM presto1.device_info WHERE Id = ${id}`;
-            resultObj = {code: 200, queryResult: result.recordsets[0]};
+            const result =
+                await mssql.query`SELECT * FROM presto1.device_info WHERE Id = ${id}`;
+            resultObj = { code: 200, queryResult: result.recordsets[0] };
         } catch (err) {
-            resultObj = {code: 500, message: err.message};
+            resultObj = { code: 500, message: err.message };
         } finally {
             await mssql.close();
             return resultObj;
@@ -54,12 +55,13 @@ class deviceInfoDAO {
 
     async getAllOwnedBy(id) {
         let resultObj;
-        try{
+        try {
             await this.connect();
-            const result = await mssql.query`SELECT * FROM presto1.device_info WHERE OwnerId = ${id}`;
-            resultObj = {code: 200, queryResult: result.recordsets[0]};
+            const result =
+                await mssql.query`SELECT * FROM presto1.device_info WHERE OwnerId = ${id}`;
+            resultObj = { code: 200, queryResult: result.recordsets[0] };
         } catch (err) {
-            resultObj = {code: 500, message: err.message};
+            resultObj = { code: 500, message: err.message };
         } finally {
             await mssql.close();
             return resultObj;
@@ -72,9 +74,12 @@ class deviceInfoDAO {
             await this.connect();
             let location = helper.getLocation(body.location);
             await mssql.query`INSERT INTO presto1.device_info (OwnerId, DeviceLatitude, DeviceLongitude, Moving) VALUES (${body.owner_id},${location.latitude},${location.longitude}, ${body.moving})`;
-            resultObj = {code: 201, message: 'Successfully added device to DB'};
+            resultObj = {
+                code: 201,
+                message: 'Successfully added device to DB',
+            };
         } catch (err) {
-            resultObj = {code: 500, message: err.message};
+            resultObj = { code: 500, message: err.message };
         } finally {
             await mssql.close();
             return resultObj;
@@ -87,9 +92,12 @@ class deviceInfoDAO {
             await this.connect();
             let location = helper.getLocation(body.location);
             await mssql.query`UPDATE presto1.device_info SET DeviceLatitude = ${location.latitude}, DeviceLongitude = ${location.longitude}, PingedAt = GETDATE(), Moving = ${body.Moving} WHERE Id = ${id}`;
-            resultObj = {code: 201, message: 'Successfully updated device within DB'};
+            resultObj = {
+                code: 201,
+                message: 'Successfully updated device within DB',
+            };
         } catch (err) {
-            resultObj = {code: 500, message: err.message};
+            resultObj = { code: 500, message: err.message };
             console.log(resultObj);
         } finally {
             await mssql.close();
@@ -102,9 +110,9 @@ class deviceInfoDAO {
         try {
             await this.connect();
             await mssql.query`DELETE FROM presto1.device_info WHERE Id = ${id}`;
-            resultObj = {code: 204, message: 'Deleted device from DB'};
+            resultObj = { code: 204, message: 'Deleted device from DB' };
         } catch (err) {
-            resultObj = {code: 500, message: err.message};
+            resultObj = { code: 500, message: err.message };
         } finally {
             await mssql.close();
             return resultObj;
