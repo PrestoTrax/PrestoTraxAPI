@@ -172,7 +172,7 @@ describe('Device Record API tests', () => {
     });
     
     it('Should delete the recently created device record within the DB', async () => {
-        const res1 = await request(server).get('/devices');
+        const res1 = await request(server).get('/records');
         const lastId = res1.body.queryResult.at(-1).Id;
         const res = await request(server).del( `/records/delete/${lastId}`);
         expect(res.status).toBe(204);
