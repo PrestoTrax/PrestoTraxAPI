@@ -16,6 +16,11 @@ router.get('/:id', async(req, res, next) => {
     res.status(result.code).send(result);
 });
 
+router.post('/login', async(req, res, next) => {
+    const result = await userDAO.authenticate(req.body);
+    res.status(result.code).send(result);
+});
+
 router.post('/new', async (req, res, next) => {
     const result = await userDAO.create(req.body);
     res.status(result.code).send(result);

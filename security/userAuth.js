@@ -7,7 +7,9 @@ class UserAuth{
         return password;
     }
 
-    
+    async comparePassword(pass1, pass2){
+        return await bcrypt.compare(pass1, pass2);
+    }
 }
 
 export default UserAuth;

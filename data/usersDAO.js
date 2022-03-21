@@ -44,10 +44,17 @@ class usersDAO {
     async authenticate(user) {
         let resultObj;
         try {
+            const userResult = await this.getOneByUsername(user.username);
+            const dbUser = userResult.queryResult[0];
+            console.log(dbUser);
             await this.connect();
-            user.password = await userAuth.encryptPassword(user.password);
-            const result = await mssql.query`SELECT * FROM presto1.users WHERE Username = ${user.username} AND Password = ${user.password}`;
-            resultObj = {code: 200, queryResult: result.recordsets[0]};
+            const isValid = await userAuth.comparePassword(user.password, dbUser.Password);
+            if(isValid){
+                resultObj = {code: 200, message: 'Successfully authenticated user'};
+            }
+            else{
+                resultObj = {code: 401, message: 'Invalid username or password'};
+            }
         } catch (err) {
             resultObj = {code: 500, message: err.message};
         } finally {
@@ -69,6 +76,20 @@ class usersDAO {
             await mssql.close();
             return resultObj;
         };
+    }
+
+    async getOneByUsername(username) {
+        let resultObj;
+        try {
+            await this.connect();
+            const result = await mssql.query`SELECT * FROM presto1.users WHERE Username = ${username}`;
+            resultObj = {code: 200, queryResult: result.recordsets[0]};
+        } catch (err) {
+            resultObj = {code: 500, message: err.message};
+        } finally {
+            await mssql.close();
+            return resultObj;
+        }
     }
 
     async create(body) {
