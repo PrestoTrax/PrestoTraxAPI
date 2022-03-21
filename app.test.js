@@ -17,17 +17,6 @@ describe('User API tests', () => {
     it('Requests a single user from the database with an ID of 8', async () => {
         const res = await request(server).get('/users/8');
         expect(res.status).toBe(200);
-        expect(res.body).toStrictEqual({
-            code: 200,
-            queryResult: [
-                {
-                    "Id": 8,
-                    "Username": "macks",
-                    "Email": "test@test.test",
-                    "Password": "test"
-                }
-            ]
-        });
     });
 
     it('Adds a user to the DB', async() => {
