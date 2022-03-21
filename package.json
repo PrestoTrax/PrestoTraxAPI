@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@jest/globals": "^27.5.1",
+    "bcrypt": "^5.0.1",
     "body-parser": "^1.19.1",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
@@ -16,7 +17,6 @@
     "jest": "^27.5.1",
     "morgan": "^1.10.0",
     "mssql": "^8.0.2",
-    "nodemon": "^2.0.15",
     "supertest": "^6.2.2"
   },
   "description": "",

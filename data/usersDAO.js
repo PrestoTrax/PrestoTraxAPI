@@ -1,6 +1,10 @@
 //const fs = require('fs');
 import mssql from 'mssql';
 
+import UserAuth from '../security/userAuth.js';
+
+const userAuth = new UserAuth();
+
 const config = {
     authentication: {
         options: {
@@ -37,6 +41,22 @@ class usersDAO {
         }
     }
 
+    async authenticate(user) {
+        let resultObj;
+        try {
+            await this.connect();
+            user.password = await userAuth.encryptPassword(user.password);
+            const result = await mssql.query`SELECT * FROM presto1.users WHERE Username = ${user.username} AND Password = ${user.password}`;
+            resultObj = {code: 200, queryResult: result.recordsets[0]};
+        } catch (err) {
+            resultObj = {code: 500, message: err.message};
+        } finally {
+            await mssql.close();
+            return resultObj;
+        }
+    }
+
+
     async getOne(id) {
         let resultObj;
         try {
@@ -55,6 +75,7 @@ class usersDAO {
         let resultObj;
         try {
             await this.connect();
+            body.password = await userAuth.encryptPassword(body.password);
             await mssql.query`INSERT INTO presto1.users (Username, Email, Password) VALUES (${body.username},${body.email},${body.password})`;
             resultObj = {code: 201, message: 'Successfully added user to DB'};
         } catch (err) {
