@@ -2,8 +2,8 @@
 import mssql from 'mssql';
 
 import UserAuth from '../security/userAuth.js';
-
-const userAuth = new UserAuth();
+import UserSecurity from '../security/userSecurity.js';
+import AuthFailedError from '../errors/authFailedError.js';
 
 const config = {
     authentication: {
@@ -48,7 +48,7 @@ class usersDAO {
             const dbUser = userResult.queryResult[0];
             console.log(dbUser);
             await this.connect();
-            const isValid = await userAuth.comparePassword(user.password, dbUser.Password);
+            const isValid = await UserAuth.comparePassword(user.password, dbUser.Password);
             if(isValid){
                 resultObj = {code: 200, message: 'Successfully authenticated user'};
             }
@@ -92,15 +92,26 @@ class usersDAO {
         }
     }
 
+    //
     async create(body) {
         let resultObj;
         try {
+            let validationObj = UserAuth.validateUserInfo(body);
+            if(!validationObj.isValid){
+                throw new AuthFailedError(401, validationObj.errorType, validationObj.message);
+            }
             await this.connect();
-            body.password = await userAuth.encryptPassword(body.password);
+            body.password = await UserSecurity.encryptPassword(body.password);
             await mssql.query`INSERT INTO presto1.users (Username, Email, Password) VALUES (${body.username},${body.email},${body.password})`;
             resultObj = {code: 201, message: 'Successfully added user to DB'};
-        } catch (err) {
-            resultObj = {code: 500, message: err.message};
+        } 
+        catch (err) {
+            if(err.name === 'AuthFailedError'){
+                resultObj = {code: 401, errorType: err.errorType, message: err.message};
+            }
+            else{
+                resultObj = {code: 500, message: err.message};
+            }
         } finally {
             await mssql.close();
             return resultObj;

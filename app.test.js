@@ -19,12 +19,65 @@ describe('User API tests', () => {
         expect(res.status).toBe(200);
     });
 
+    it('Fails to add a user to the DB because of a short password', async() => {
+        const newUser = {
+            "username": "Max1mus7",
+            "email": "test@test.test",
+            "password": "badtest"
+        };
+        const res = await request(server).post('/users/new').send(newUser);
+        expect(res.status).toBe(401);
+        expect(res.body.errorType).toBe('PASSWORD_SHORT');
+        expect(res.body.message).toBe('Password must be at least 8 characters long');
+    });
+
+    it('Fails to add a user to the DB because of a short username', async() => {
+        const newUser = {
+            "username": "Macks",
+            "email": "test@test.test",
+            "password": "G00dP@ssw0rd"
+        };
+        const res = await request(server).post('/users/new').send(newUser);
+        expect(res.status).toBe(401);
+        expect(res.body.errorType).toBe('USERNAME_SHORT');
+        expect(res.body.message).toBe('Username must be at least 8 characters long');
+    });
+
+    it('Fails to add a user to the DB because of no username', async() => {
+        const newUser = {
+            "email": "test@test.test",
+            "password": "G00dP@ssw0rd"
+        };
+        const res = await request(server).post('/users/new').send(newUser);
+        expect(res.status).toBe(401);
+        expect(res.body.errorType).toBe('USERNAME_NOT_FOUND');
+        expect(res.body.message).toBe('No username input');
+    });
+
+    it('Fails to add a user to the DB because of no password', async() => {
+        const newUser = {
+            "username": "Max1mus7",
+            "email": "test@test.test"
+        };
+        const res = await request(server).post('/users/new').send(newUser);
+        expect(res.status).toBe(401);
+        expect(res.body.errorType).toBe('PASSWORD_NOT_FOUND');
+        expect(res.body.message).toBe('No password input');
+    });
+
+    it('Fails to add a user to the DB because the body contains no input', async() => {
+        const res = await request(server).post('/users/new');
+        expect(res.status).toBe(401);
+        expect(res.body.errorType).toBe('NO_USER_INFO');
+        expect(res.body.message).toBe('No user input');
+    });
+
     it('Adds a user to the DB', async() => {
         const newUser = {
-            "username": "macks",
+            "username": "Max1mus7",
             "email": "test@test.test",
-            "password": "test"
-        };
+            "password": "G00dP@ssw0rd"
+        }
         const res = await request(server).post('/users/new').send(newUser);
         expect(res.status).toBe(201);
         expect(res.body.message).toBe('Successfully added user to DB');
