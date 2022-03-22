@@ -96,13 +96,24 @@ class usersDAO {
     async create(body) {
         let resultObj;
         try {
-            let validationObj = UserAuth.validateUserInfo(body);
+            let validationObj = await UserAuth.validateUserInfo(body);
             if(!validationObj.isValid){
+                console.log(validationObj);
                 throw new AuthFailedError(401, validationObj.errorType, validationObj.message);
             }
             await this.connect();
             body.password = await UserSecurity.encryptPassword(body.password);
-            await mssql.query`INSERT INTO presto1.users (Username, Email, Password) VALUES (${body.username},${body.email},${body.password})`;
+            const result = await mssql.query`IF NOT EXISTS(SELECT 1 FROM presto1.users WHERE Username = ${body.username}) 
+            BEGIN 
+                    INSERT INTO presto1.users 
+                    (Username, Email, Password) 
+                    VALUES (${body.username},${body.email},${body.password}) 
+            END`;
+            console.log(result);
+            if(result.rowsAffected == 0){
+                console.log('User already exists');
+                throw new AuthFailedError(401, 'USER_EXISTS', 'User already exists with that username');
+            }
             resultObj = {code: 201, message: 'Successfully added user to DB'};
         } 
         catch (err) {

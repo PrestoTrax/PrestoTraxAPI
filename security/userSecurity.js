@@ -1,4 +1,3 @@
-
 import bcrypt from 'bcrypt';
 export default class UserSecurity {
     static async encryptPassword(password) {
@@ -6,4 +5,6 @@ export default class UserSecurity {
         password = await bcrypt.hash(password, salt);
         return password;
     }
+
+    //ensures that a user with the same username does not already exist in the database
 }
