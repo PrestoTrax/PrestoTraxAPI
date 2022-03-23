@@ -26,7 +26,7 @@ class UserAuth {
         if (user.password.length < 8) {
             return this.passwordShortError(resultObj);
         }
-        if (user.username.length < 8) {
+        if (user.username.length < 4) {
             return this.usernameShortError(resultObj);
         }
         if(!this.hasSpecialChar(user.password)){
@@ -43,6 +43,12 @@ class UserAuth {
         }
 
         return resultObj;
+    }
+
+    static invalidCredentialsError(resultObj) {
+        resultObj.isValid = false;
+        resultObj.errorType = 'INVALID_CREDENTIALS';
+        resultObj.message = 'Invalid username or password';
     }
 
     //ensure that a user's password has a special character
@@ -100,7 +106,7 @@ class UserAuth {
     static usernameShortError(resultObj) {
         resultObj.isValid = false;
         resultObj.errorType = 'USERNAME_SHORT';
-        resultObj.message = 'Username must be at least 8 characters long';
+        resultObj.message = 'Username must be at least 4 characters long';
         return resultObj;
     }
 
@@ -159,7 +165,6 @@ class UserAuth {
         resultObj.message = 'Password must have a number';
         return resultObj;
     }
-
 }
 
 export default UserAuth;

@@ -46,17 +46,27 @@ class usersDAO {
         try {
             const userResult = await this.getOneByUsername(user.username);
             const dbUser = userResult.queryResult[0];
-            console.log(dbUser);
+            if (dbUser.Username === undefined){
+                throw new AuthFailedError(401, 'USER_NOT_FOUND', 'User not found');
+            }
+            //console.log(dbUser);
             await this.connect();
             const isValid = await UserAuth.comparePassword(user.password, dbUser.Password);
             if(isValid){
+                console.log('success');
                 resultObj = {code: 200, message: 'Successfully authenticated user'};
             }
             else{
-                resultObj = {code: 401, message: 'Invalid username or password'};
+                throw new AuthFailedError(401, 'INVALID_CREDENTIALS', 'Invalid username or password');
             }
         } catch (err) {
-            resultObj = {code: 500, message: err.message};
+            if(err.name === 'AuthFailedError'){
+                resultObj = {code: 401, errorType: err.errorType, message: err.message};
+            }
+            else{
+                console.log(err);
+                resultObj = {code: 500, message: err.message};
+            }
         } finally {
             await mssql.close();
             return resultObj;
@@ -98,7 +108,6 @@ class usersDAO {
         try {
             let validationObj = await UserAuth.validateUserInfo(body);
             if(!validationObj.isValid){
-                console.log(validationObj);
                 throw new AuthFailedError(401, validationObj.errorType, validationObj.message);
             }
             await this.connect();
@@ -109,7 +118,6 @@ class usersDAO {
                     (Username, Email, Password) 
                     VALUES (${body.username},${body.email},${body.password}) 
             END`;
-            console.log(result);
             if(result.rowsAffected == 0){
                 console.log('User already exists');
                 throw new AuthFailedError(401, 'USER_EXISTS', 'User already exists with that username');

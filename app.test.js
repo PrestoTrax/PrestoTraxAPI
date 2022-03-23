@@ -4,6 +4,16 @@ import request from 'supertest';
 import server from './index.js';
 
 jest.setTimeout(20000);
+
+//==================================================================================================================
+//                                           Home Route Test
+//==================================================================================================================
+describe('Home Page Exists', () => {
+    it('Should not error', async () => {
+        const response = await request(server).get('');
+        expect(response.status).toBe(200);
+    })
+});
 //==================================================================================================================
 //                                           User Tests
 //==================================================================================================================
@@ -33,14 +43,36 @@ describe('User API tests', () => {
 
     it('Fails to add a user to the DB because of a short username', async() => {
         const newUser = {
-            "username": "Macks",
+            "username": "Mac",
             "email": "test@test.test",
             "password": "G00dP@ssw0rd"
         };
         const res = await request(server).post('/users/new').send(newUser);
         expect(res.status).toBe(401);
         expect(res.body.errorType).toBe('USERNAME_SHORT');
-        expect(res.body.message).toBe('Username must be at least 8 characters long');
+        expect(res.body.message).toBe('Username must be at least 4 characters long');
+    });
+
+    it('Fails to add a user to the DB because of not having a number within their password', async() => {
+        const newUser = {
+            "username": "Maximus",
+            "email": "test@test.test",
+            "password": "GoodP@ssowrd"};
+        const res = await request(server).post('/users/new').send(newUser);
+        expect(res.status).toBe(401);
+        expect(res.body.errorType).toBe('NO_NUMBER');
+        expect(res.body.message).toBe('Password must have a number');
+    });
+
+    it('Fails to add a user to the DB because of not having a special character within their password', async() => {
+        const newUser = {
+            "username": "Maximus",
+            "email": "test@test.test",
+            "password": "G00dPassw0rd"};
+        const res = await request(server).post('/users/new').send(newUser);
+        expect(res.status).toBe(401);
+        expect(res.body.errorType).toBe('NO_SPECIAL_CHAR');
+        expect(res.body.message).toBe('Password must have a special character');
     });
 
     it('Fails to add a user to the DB because of no username', async() => {
@@ -70,6 +102,28 @@ describe('User API tests', () => {
         expect(res.status).toBe(401);
         expect(res.body.errorType).toBe('NO_USER_INFO');
         expect(res.body.message).toBe('No user input');
+    });
+
+    it('Fails to authenticate a user that does not exist', async() => {
+        const newUser = {
+            "username": "Mackslemus",
+            "email": "test@test.test",
+            "password": "badpass"
+        }
+        const res = await request(server).post('/users/login').send(newUser);
+        expect(res.status).toBe(401);
+        expect(res.body.errorType).toBe('INVALID_CREDENTIALS');
+        expect(res.body.message).toBe('Invalid username or password');
+    });
+
+    it('Successfully logs in as a user', async() => {
+        const newUser = {
+            "username": "Mackslemus",
+            "password": "G00dP@ssw0rd"
+        }
+        const res = await request(server).post('/users/login').send(newUser);
+        expect(res.status).toBe(200);
+        expect(res.body.message).toBe('Successfully authenticated user');
     });
 
     it('Adds a user to the DB', async() => {
