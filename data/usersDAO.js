@@ -47,9 +47,8 @@ class usersDAO {
         try {
             const userResult = await this.getOneByUsername(user.username);
             const dbUser = userResult.queryResult[0];
-            
+
             UserSecurity.userExists(dbUser);
-            UserValidation.validateUserInfo(user);
 
             await this.connect();
             const isValid = await UserSecurity.comparePassword(user.password, dbUser.Password);

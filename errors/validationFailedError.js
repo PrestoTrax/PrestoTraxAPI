@@ -1,13 +1,6 @@
 //class that holds all failed validation errors
 export default class ValidationFailedError extends Error{
 
-    static invalidCredentialsError() {
-        this.code = 401;
-        this.errorType = 'INVALID_CREDENTIALS';
-        this.message = 'Invalid username or password';
-        return this;
-    }
-
     static passwordShortError() {
         this.code = 401;
         this.errorType = 'PASSWORD_SHORT';
@@ -59,7 +52,7 @@ export default class ValidationFailedError extends Error{
 
     static noLowerCaseLetterError() {
         this.isValid = false;
-        this.errorType = 'NO_LOWER_CASE_LETTER';
+        this.errorType = 'NO_LOWERCASE_LETTER';
         this.message = 'Password must have a lowercase letter';
         return this;
     }

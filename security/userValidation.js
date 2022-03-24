@@ -89,7 +89,7 @@ class UserValidation {
     //ensure that a user's password has a lowercase letter
     static hasLowerCaseLetter(password) {
         for (let i = 0; i < password.length; i++) {
-            if (password.charAt(i) == password.charAt(i).toLowerCase()) {
+            if (password.charAt(i) == password.charAt(i).toLowerCase() && password.charAt(i) != password.charAt(i).toUpperCase()) {
                 return true;
             }
         }
