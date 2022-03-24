@@ -3,7 +3,7 @@ import {describe, jest} from '@jest/globals';
 import request from 'supertest';
 import server from './index.js';
 
-jest.setTimeout(20000);
+jest.setTimeout(5000);
 
 //==================================================================================================================
 //                                           Home Route Test
@@ -108,20 +108,21 @@ describe('User API tests', () => {
         const newUser = {
             "username": "Mackslemus",
             "email": "test@test.test",
-            "password": "badpass"
+            "password": "badP@ss1"
         }
         const res = await request(server).post('/users/login').send(newUser);
         expect(res.status).toBe(401);
-        expect(res.body.errorType).toBe('INVALID_CREDENTIALS');
-        expect(res.body.message).toBe('Invalid username or password');
+        expect(res.body.errorType).toBe('USER_NOT_FOUND');
+        expect(res.body.message).toBe('User not found');
     });
 
     it('Successfully logs in as a user', async() => {
         const newUser = {
-            "username": "Mackslemus",
+            "username": "Mackslemus1",
             "password": "G00dP@ssw0rd"
         }
         const res = await request(server).post('/users/login').send(newUser);
+        console.log(res.body);
         expect(res.status).toBe(200);
         expect(res.body.message).toBe('Successfully authenticated user');
     });
@@ -133,6 +134,7 @@ describe('User API tests', () => {
             "password": "G00dP@ssw0rd"
         }
         const res = await request(server).post('/users/new').send(newUser);
+        console.log(res.body);
         expect(res.status).toBe(201);
         expect(res.body.message).toBe('Successfully added user to DB');
     });

@@ -1,9 +1,10 @@
 //const fs = require('fs');
 import mssql from 'mssql';
 
-import UserAuth from '../security/userAuth.js';
+
+import UserValidation from '../security/userValidation.js';
 import UserSecurity from '../security/userSecurity.js';
-import AuthFailedError from '../errors/authFailedError.js';
+
 
 const config = {
     authentication: {
@@ -46,25 +47,23 @@ class usersDAO {
         try {
             const userResult = await this.getOneByUsername(user.username);
             const dbUser = userResult.queryResult[0];
-            if (dbUser.Username === undefined){
-                throw new AuthFailedError(401, 'USER_NOT_FOUND', 'User not found');
-            }
-            //console.log(dbUser);
+            
+            UserSecurity.userExists(dbUser);
+            UserValidation.validateUserInfo(user);
+
             await this.connect();
-            const isValid = await UserAuth.comparePassword(user.password, dbUser.Password);
+            const isValid = await UserSecurity.comparePassword(user.password, dbUser.Password);
             if(isValid){
-                console.log('success');
                 resultObj = {code: 200, message: 'Successfully authenticated user'};
             }
-            else{
-                throw new AuthFailedError(401, 'INVALID_CREDENTIALS', 'Invalid username or password');
-            }
         } catch (err) {
-            if(err.name === 'AuthFailedError'){
-                resultObj = {code: 401, errorType: err.errorType, message: err.message};
+            if(err.name === 'ValidationFailedError'){
+                resultObj = {code: err.code, errorType: err.errorType, message: err.message};
+            }
+            else if(err.name === 'AuthFailedError'){
+                resultObj = {code: err.code, errorType: err.errorType, message: err.message};
             }
             else{
-                console.log(err);
                 resultObj = {code: 500, message: err.message};
             }
         } finally {
@@ -106,27 +105,22 @@ class usersDAO {
     async create(body) {
         let resultObj;
         try {
-            let validationObj = await UserAuth.validateUserInfo(body);
-            if(!validationObj.isValid){
-                throw new AuthFailedError(401, validationObj.errorType, validationObj.message);
-            }
+            //validate the new user's information and throws an error if it does not follow given standards
+            UserValidation.validateUserInfo(body);
             await this.connect();
             body.password = await UserSecurity.encryptPassword(body.password);
-            const result = await mssql.query`IF NOT EXISTS(SELECT 1 FROM presto1.users WHERE Username = ${body.username}) 
+            await mssql.query`IF NOT EXISTS(SELECT 1 FROM presto1.users WHERE Username = ${body.username}) 
             BEGIN 
                     INSERT INTO presto1.users 
                     (Username, Email, Password) 
                     VALUES (${body.username},${body.email},${body.password}) 
             END`;
-            if(result.rowsAffected == 0){
-                console.log('User already exists');
-                throw new AuthFailedError(401, 'USER_EXISTS', 'User already exists with that username');
-            }
+            //UserValidation.validateUserInfo(result.recordsets[0]);
             resultObj = {code: 201, message: 'Successfully added user to DB'};
         } 
         catch (err) {
-            if(err.name === 'AuthFailedError'){
-                resultObj = {code: 401, errorType: err.errorType, message: err.message};
+            if(err.name === 'ValidationFailedError'){
+                resultObj = {code: err.code, errorType: err.errorType, message: err.message};
             }
             else{
                 resultObj = {code: 500, message: err.message};
