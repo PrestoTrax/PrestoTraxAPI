@@ -16,14 +16,14 @@ export default class ValidationFailedError extends Error{
     }
 
     static usernameNotFoundError() {
-        this.isValid = false;
+        this.code = 401;
         this.errorType = 'USERNAME_NOT_FOUND';
         this.message = 'No username input';
         return this;
     }
 
     static passwordNotFoundError() {
-        this.isValid = false;
+        this.code = 401;
         this.errorType = 'PASSWORD_NOT_FOUND';
         this.message = 'No password input';
         return this;
