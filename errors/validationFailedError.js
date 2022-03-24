@@ -37,28 +37,28 @@ export default class ValidationFailedError extends Error{
     }
 
     static noSpecialCharError() {
-        this.isValid = false;
+        this.code = 401;
         this.errorType = 'NO_SPECIAL_CHAR';
         this.message = 'Password must have a special character';
         return this;
     }
 
     static noCapitalLetterError() {
-        this.isValid = false;
+        this.code = 401;
         this.errorType = 'NO_CAPITAL_LETTER';
         this.message = 'Password must have a capital letter';
         return this;
     }
 
     static noLowerCaseLetterError() {
-        this.isValid = false;
+        this.code = 401;
         this.errorType = 'NO_LOWERCASE_LETTER';
         this.message = 'Password must have a lowercase letter';
         return this;
     }
 
     static noNumberError() {
-        this.isValid = false;
+        this.code = 401;
         this.errorType = 'NO_NUMBER';
         this.message = 'Password must have a number';
         return this;

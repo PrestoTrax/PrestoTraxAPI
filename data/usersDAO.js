@@ -51,15 +51,10 @@ class usersDAO {
             UserSecurity.userExists(dbUser);
 
             await this.connect();
-            const isValid = await UserSecurity.comparePassword(user.password, dbUser.Password);
-            if(isValid){
-                resultObj = {code: 200, message: 'Successfully authenticated user'};
-            }
+            await UserSecurity.comparePassword(user.password, dbUser.Password);
+            resultObj = {code: 200, message: 'Successfully authenticated user'};
         } catch (err) {
-            if(err.name === 'ValidationFailedError'){
-                resultObj = {code: err.code, errorType: err.errorType, message: err.message};
-            }
-            else if(err.name === 'AuthFailedError'){
+            if(err.name === 'AuthFailedError'){
                 resultObj = {code: err.code, errorType: err.errorType, message: err.message};
             }
             else{
@@ -107,7 +102,9 @@ class usersDAO {
             //validate the new user's information and throws an error if it does not follow given standards
             UserValidation.validateUserInfo(body);
             await this.connect();
+            //console.log('here')
             body.password = await UserSecurity.encryptPassword(body.password);
+            //console.log('here')
             await mssql.query`IF NOT EXISTS(SELECT 1 FROM presto1.users WHERE Username = ${body.username}) 
             BEGIN 
                     INSERT INTO presto1.users 

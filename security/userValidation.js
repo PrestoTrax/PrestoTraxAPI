@@ -4,11 +4,6 @@ import ValidationFailedError from '../errors/validationFailedError.js';
 class UserValidation {
     //validate that a user's information is acceptable upon registration
     static validateUserInfo(user) {
-        let resultObj = {
-            isValid: true,
-            errorType: null,
-            message: 'User information is valid',
-        };
 
         //if no information is provided when attempting to register, throw an error
         if (user == undefined || user == null || user === {} || user === [] || (user.username == undefined && user.password == undefined && user.email == undefined)) {
@@ -61,7 +56,7 @@ class UserValidation {
         //if a password does not have a number, throw an error
         if(!this.hasNumber(user.password)){
             //console.log('no number');
-            throw ValidationFailedError.noNumberError(resultObj);
+            throw ValidationFailedError.noNumberError();
         }
     }
 

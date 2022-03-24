@@ -132,6 +132,17 @@ describe('User API tests', () => {
         expect(res.body.message).toBe('No user input');
     });
 
+    it('Fails to authenticate a user because the user submitted invalid credentials', async () => {
+        const user = {
+            "username": "Mackslemus1",
+            "password": "G00dP@ss0rd"
+        }
+        const res = await request(server).post('/users/login').send(user);
+        expect(res.status).toBe(401);
+        expect(res.body.errorType).toBe('INVALID_CREDENTIALS');
+        expect(res.body.message).toBe('Invalid username or password');
+    })
+
     it('Fails to authenticate a user that does not exist', async () => {
         const newUser = {
             username: 'Mackslemus',
