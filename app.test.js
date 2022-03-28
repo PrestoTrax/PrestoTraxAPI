@@ -236,8 +236,8 @@ describe('Device Info API tests', () => {
         const newDevice = {
             owner_id: 8,
             location: {
-                latitude: "33.512766 / N 33° 30' 45.956",
-                longitude: "-112.126330 / W 112° 7' 34.786",
+                latitude: "33.512766",
+                longitude: "-112.126330",
             },
             moving: 0,
         };
@@ -301,8 +301,8 @@ describe('Device Record API tests', () => {
             parent_device: 1,
             reported_lost: 0,
             location: {
-                latitude: "33.512766 / N 33° 30' 45.956",
-                longitude: "-112.126330 / W 112° 7' 34.786",
+                latitude: 33.512766,
+                longitude: -112.126330,
             },
         };
         const res = await request(server).post('/records/new').send(newDevice);

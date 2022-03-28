@@ -73,6 +73,7 @@ class deviceInfoDAO {
         try {
             await this.connect();
             let location = body.location;
+            //console.log(location);
             await mssql.query`INSERT INTO presto1.device_info (OwnerId, DeviceLatitude, DeviceLongitude, Moving) VALUES (${body.owner_id},${location.latitude},${location.longitude}, ${body.moving})`;
             resultObj = {
                 code: 201,

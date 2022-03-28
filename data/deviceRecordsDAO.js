@@ -87,7 +87,8 @@ class deviceRecordsDAO {
         try {
             await this.connect();
             let location = body.location;
-            await mssql.query`INSERT INTO presto1.device_records (ParentDevice, OwnerId, ReportedLost, DeviceLatitude, DeviceLongitude) VALUES (${body.parent_device}, ${body.owner_id}, ${body.reported_lost}, ${location.latitude},${location.longitude})`;
+            console.log(location);
+            await mssql.query`INSERT INTO presto1.device_records (ParentDevice, OwnerId, ReportedLost, DeviceLatitude, DeviceLongitude) VALUES (${body.parent_device}, ${body.owner_id}, ${body.reported_lost}, ${location.latitude+''},${location.longitude+''})`;
             resultObj = {code: 201, message: 'Successfully added device record to DB'};
         } catch (err) {
             resultObj = {code: 500, message: err.message};
