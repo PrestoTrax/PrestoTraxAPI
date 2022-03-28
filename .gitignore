@@ -131,3 +131,7 @@ dist
 
 # documentation info
 documentation/
+
+# unnecessary for deployment
+.vscode/
+.vs/

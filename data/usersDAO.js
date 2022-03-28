@@ -52,6 +52,7 @@ class usersDAO {
 
             await this.connect();
             await UserSecurity.comparePassword(user.password, dbUser.Password);
+            
             resultObj = {code: 200, message: 'Successfully authenticated user'};
         } catch (err) {
             if(err.name === 'AuthFailedError'){

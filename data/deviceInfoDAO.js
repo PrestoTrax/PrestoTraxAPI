@@ -1,5 +1,5 @@
 // const mysql = require('mysql');
-import HelperMethods from './helperMethods.js';
+//import HelperMethods from './helperMethods.js';
 import fs from 'fs';
 import mssql from 'mssql';
 const config = {
@@ -18,7 +18,7 @@ const config = {
     },
 };
 
-const helper = new HelperMethods();
+//const helper = new HelperMethods();
 
 class deviceInfoDAO {
     async connect() {
@@ -72,7 +72,7 @@ class deviceInfoDAO {
         let resultObj;
         try {
             await this.connect();
-            let location = helper.getLocation(body.location);
+            let location = body.location;
             await mssql.query`INSERT INTO presto1.device_info (OwnerId, DeviceLatitude, DeviceLongitude, Moving) VALUES (${body.owner_id},${location.latitude},${location.longitude}, ${body.moving})`;
             resultObj = {
                 code: 201,
@@ -90,7 +90,7 @@ class deviceInfoDAO {
         let resultObj;
         try {
             await this.connect();
-            let location = helper.getLocation(body.location);
+            let location = body.location;
             await mssql.query`UPDATE presto1.device_info SET DeviceLatitude = ${location.latitude}, DeviceLongitude = ${location.longitude}, PingedAt = GETDATE(), Moving = ${body.Moving} WHERE Id = ${id}`;
             resultObj = {
                 code: 201,

@@ -1,5 +1,5 @@
 // const mysql = require('mysql');
-import HelperMethods from './helperMethods.js';
+//import HelperMethods from './helperMethods.js';
 //const fs = require('fs');
 import mssql from 'mssql';
 
@@ -20,7 +20,7 @@ const config = {
 };
 
 
-const helper = new HelperMethods();
+//const helper = new HelperMethods();
 
 class deviceRecordsDAO {
     async connect() {
@@ -86,7 +86,7 @@ class deviceRecordsDAO {
         let resultObj;
         try {
             await this.connect();
-            let location = helper.getLocation(body.location);
+            let location = body.location;
             await mssql.query`INSERT INTO presto1.device_records (ParentDevice, OwnerId, ReportedLost, DeviceLatitude, DeviceLongitude) VALUES (${body.parent_device}, ${body.owner_id}, ${body.reported_lost}, ${location.latitude},${location.longitude})`;
             resultObj = {code: 201, message: 'Successfully added device record to DB'};
         } catch (err) {
