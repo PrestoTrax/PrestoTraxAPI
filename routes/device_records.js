@@ -15,6 +15,11 @@ router.get('/:id', async(req, res, next) => {
     res.status(result.code).send(result);
 });
 
+router.get('/recent/:id', async(req, res, next) => {
+    const result = await dao.getRecentLocation(req.params.id);
+    res.status(result.code).send(result);
+});
+
 router.get('/user/:id', async(req, res, next) => {
     const result = await dao.getAllOwnedBy(req.params.id);
     res.status(result.code).send(result);

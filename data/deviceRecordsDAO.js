@@ -54,11 +54,25 @@ class deviceRecordsDAO {
         }
     }
 
+    async getRecentLocation(id) {
+        let resultObj;
+        try{
+            await this.connect();
+            const result = await mssql.query`SELECT TOP 1 * FROM presto1.device_records WHERE OwnerId = ${id} ORDER BY CreatedAt DESC`;
+            resultObj = {code: 200, queryResult: result.recordsets[0]};
+        } catch (err) {
+            resultObj = {code: 500, message: err.message};
+        } finally {
+            await mssql.close();
+            return resultObj;
+        }
+    }
+
     async getAllOwnedBy(id) {
         let resultObj;
         try{
             await this.connect();
-            const result = await mssql.query`SELECT * FROM presto1.device_records WHERE OwnerId = ${id}`;
+            const result = await mssql.query`SELECT * FROM presto1.device_records WHERE OwnerId = ${id} ORDER BY CreatedAt DESC`;
             resultObj = {code: 200, queryResult: result.recordsets[0]};
         } catch (err) {
             resultObj = {code: 500, message: err.message};
