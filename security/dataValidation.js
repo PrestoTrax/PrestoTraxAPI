@@ -1,4 +1,4 @@
-import dataError from "../errors/dataError";
+import dataError from "../errors/dataError.js";
 
 export default class dataValidation{
     static isEmpty(data){
