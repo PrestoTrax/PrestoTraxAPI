@@ -5,8 +5,5 @@ export default class dataValidation{
         if(data === undefined || data === null || data === [] || data.length === 0){
             throw dataError.noDataFoundError();
         }
-        else{
-            return true;
-        }
     }
 }
