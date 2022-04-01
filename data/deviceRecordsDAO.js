@@ -3,6 +3,8 @@
 //const fs = require('fs');
 import mssql from 'mssql';
 
+import DataValidation from '../security/dataValidation';
+
 const config = {
     authentication: {
         options: {
@@ -23,9 +25,11 @@ const config = {
 //const helper = new HelperMethods();
 
 class deviceRecordsDAO {
+    
     async connect() {
         await mssql.connect(config);
     }
+
     async getAll() {
         let resultObj;
         try {
@@ -73,8 +77,11 @@ class deviceRecordsDAO {
         try{
             await this.connect();
             const result = await mssql.query`SELECT TOP 20 * FROM presto1.device_records WHERE OwnerId = ${id} ORDER BY CreatedAt DESC`;
-            resultObj = {code: 200, queryResult: result.recordsets[0]};
+            DataValidation.isEmpty(result.recordsets[0]);
         } catch (err) {
+            if(err.name === 'DataError'){
+                resultObj = {code: err.code, errorType: err.errorType, message: err.message};
+            }
             resultObj = {code: 500, message: err.message};
         } finally {
             await mssql.close();
