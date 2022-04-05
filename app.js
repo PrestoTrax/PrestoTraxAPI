@@ -9,10 +9,15 @@ import usersRouter from './routes/users.js';
 import device_infoRouter from './routes/device_info.js';
 import device_recordsRouter from './routes/device_records.js';
 
+//create the express app
 let app = express();
 
 
 // view engine setup
+
+/**
+ * server engine setup
+ */
 app.set('views', path.join(process.cwd(), 'views'));
 app.set('view engine', 'pug');
 app.use(logger('dev'));
@@ -20,7 +25,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(process.cwd(), 'public')));
-
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
