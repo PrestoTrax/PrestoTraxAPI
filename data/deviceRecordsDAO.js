@@ -2,26 +2,11 @@
 //import HelperMethods from './helperMethods.js';
 //const fs = require('fs');
 import mssql from 'mssql';
-
+import 'dotenv/config';
 import DataValidation from '../security/dataValidation.js';
+import DAOConfig from './DAOConfig.js';
 
-const config = {
-    authentication: {
-        options: {
-            userName: 'ptadmin77',
-            password: '@dm1npr3stO13579',
-        },
-        type: 'default',
-    },
-    server: 'prestotrax.database.windows.net',
-    options: {
-        database: 'presto1',
-        encrypt: true,
-        trustServerCertificate: true,
-    },
-};
-
-const pool = new mssql.ConnectionPool(config);
+const pool = new mssql.ConnectionPool(DAOConfig.config);
 //const helper = new HelperMethods();
 
 class deviceRecordsDAO {

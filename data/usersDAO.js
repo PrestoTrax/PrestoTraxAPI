@@ -4,23 +4,9 @@ import mssql from 'mssql';
 
 import UserValidation from '../security/userValidation.js';
 import UserSecurity from '../security/userSecurity.js';
+import DAOConfig from './DAOConfig.js';
 
-
-const config = {
-    authentication: {
-        options: {
-            userName: 'ptadmin77',
-            password: '@dm1npr3stO13579',
-        },
-        type: 'default',
-    },
-    server: 'prestotrax.database.windows.net',
-    options: {
-        database: 'presto1',
-        encrypt: true,
-        trustServerCertificate: true,
-    },
-};
+const config = DAOConfig.config;
 
 //const helper = new HelperMethods();
  

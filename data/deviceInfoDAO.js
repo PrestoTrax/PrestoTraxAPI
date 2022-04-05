@@ -2,24 +2,9 @@
 //import HelperMethods from './helperMethods.js';
 import fs from 'fs';
 import mssql from 'mssql';
-const config = {
-    authentication: {
-        options: {
-            userName: 'ptadmin77',
-            password: '@dm1npr3stO13579',
-        },
-        type: 'default',
-    },
-    server: 'prestotrax.database.windows.net',
-    options: {
-        database: 'presto1',
-        encrypt: true,
-        trustServerCertificate: true,
-    },
-};
+import DAOConfig from './DAOConfig.js';
 
-//const helper = new HelperMethods();
-
+const config = DAOConfig.config;
 class deviceInfoDAO {
     async connect() {
         await mssql.connect(config);
