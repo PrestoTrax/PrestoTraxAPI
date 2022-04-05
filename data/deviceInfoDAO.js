@@ -2,9 +2,8 @@
 //import HelperMethods from './helperMethods.js';
 import fs from 'fs';
 import mssql from 'mssql';
-import DAOConfig from './DAOConfig.js';
+import { config } from './DAOConfig.js';
 
-const config = DAOConfig.config;
 class deviceInfoDAO {
     async connect() {
         await mssql.connect(config);

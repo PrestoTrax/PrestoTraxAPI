@@ -4,9 +4,7 @@ import mssql from 'mssql';
 
 import UserValidation from '../security/userValidation.js';
 import UserSecurity from '../security/userSecurity.js';
-import DAOConfig from './DAOConfig.js';
-
-const config = DAOConfig.config;
+import { config } from './DAOConfig.js';
 
 //const helper = new HelperMethods();
  

@@ -4,9 +4,10 @@
 import mssql from 'mssql';
 import 'dotenv/config';
 import DataValidation from '../security/dataValidation.js';
-import DAOConfig from './DAOConfig.js';
+import { config } from './DAOConfig.js';
 
-const pool = new mssql.ConnectionPool(DAOConfig.config);
+
+const pool = new mssql.ConnectionPool(config);
 //const helper = new HelperMethods();
 
 class deviceRecordsDAO {

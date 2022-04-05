@@ -1,6 +1,4 @@
-export default class DAOConfig {
-    
-    static config = {
+    export let config = {
         authentication: {
             options: {
                 userName: process.env.DB_USER,
@@ -15,4 +13,3 @@ export default class DAOConfig {
             trustServerCertificate: true,
         },
     };
-}
