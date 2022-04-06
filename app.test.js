@@ -2,7 +2,7 @@ import { describe, jest } from '@jest/globals';
 import request from 'supertest';
 import server from './index.js';
 
-jest.setTimeout(5000);
+jest.setTimeout(2000);
 
 //==================================================================================================================
 //                                           Home Route Test

@@ -1,8 +1,13 @@
 import ValidationFailedError from '../errors/validationFailedError.js';
 
-//handles user data validation for new users
+/**A class that handles user data validation for new users*/
 class UserValidation {
-    //validate that a user's information is acceptable upon registration
+    /**
+     * Tests user input to ensure that it is valid
+     * @function validateUserInfo
+     * @param {Object} user 
+     * @summary If a user's information is not valid, an error is thrown. Otherwise, nothing happens.
+     */
     static validateUserInfo(user) {
 
         //if no information is provided when attempting to register, throw an error
@@ -71,7 +76,12 @@ class UserValidation {
         return false;
     }
 
-    //ensure that a user's password has a capital letter
+    /**
+     * Checks if a user's password has a capital letter
+     * @function hasCapitalLetter
+     * @param {string} password 
+     * @returns a boolean indicating whether or not a password has a capital letter
+     */
     static hasCapitalLetter(password) {
         for (let i = 0; i < password.length; i++) {
             if (password.charAt(i) == password.charAt(i).toUpperCase() && password.charAt(i) != password.charAt(i).toLowerCase()) {
@@ -81,7 +91,12 @@ class UserValidation {
         return false;
     }
 
-    //ensure that a user's password has a lowercase letter
+    /**
+     * Checks if a user's password has a lowercase letter
+     * @function hasLowerCaseLetter
+     * @param {string} password 
+     * @returns a boolean indicating whether or not a password has a lowercase letter
+     */
     static hasLowerCaseLetter(password) {
         for (let i = 0; i < password.length; i++) {
             if (password.charAt(i) == password.charAt(i).toLowerCase() && password.charAt(i) != password.charAt(i).toUpperCase()) {
@@ -91,7 +106,12 @@ class UserValidation {
         return false;
     }
 
-    //ensure that a user's password has a number
+    /**
+     * Checks if a user's password has a number
+     * @function hasNumber
+     * @param {string} password 
+     * @returns a boolean indicating whether or not a password has a number
+     */
     static hasNumber(password) {
         for (let i = 0; i < password.length; i++) {
             if (password.charAt(i) >= '0' && password.charAt(i) <= '9') {
