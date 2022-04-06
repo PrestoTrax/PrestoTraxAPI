@@ -1,9 +1,15 @@
 import ValidationFailedError from '../errors/validationFailedError.js';
 
-/**A class that handles user data validation for new users*/
-class UserValidation {
+/** @module security/UserValidation */
+
+/**
+ * A class that handles user data validation for new users
+ * @class UserValidation
+ */
+export default class UserValidation {
     /**
      * Tests user input to ensure that it is valid
+     * @static
      * @function validateUserInfo
      * @param {Object} user 
      * @summary If a user's information is not valid, an error is thrown. Otherwise, nothing happens.
@@ -124,4 +130,4 @@ class UserValidation {
     
 }
 
-export default UserValidation;
+

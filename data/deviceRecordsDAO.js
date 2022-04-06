@@ -8,11 +8,11 @@ import { connection } from './DAOConfig.js';
 //const poolConn = new mssql.ConnectionPool(config);
 //const helper = new HelperMethods();
 
-/**Class used to perform CRUD operations on device records in a database
+/**
+ * Class used to perform CRUD operations on device records in a database
  * @class deviceRecordsDAO
  */
 class deviceRecordsDAO {
-
     /**
      * gets all device records from the database
      * @async
@@ -24,9 +24,18 @@ class deviceRecordsDAO {
         try {
             const result =
                 await connection.query`SELECT * FROM presto1.device_records`;
+            DataValidation.isEmpty(result.recordsets[0]);
             resultObj = { code: 200, queryResult: result.recordsets[0] };
         } catch (err) {
-            resultObj = { code: 500, message: err.message };
+            if (err.name == 'DataError') {
+                resultObj = {
+                    code: err.code,
+                    errorType: err.errorType,
+                    message: err.message,
+                };
+            } else {
+                resultObj = { code: 500, message: err.message };
+            }
         } finally {
             return resultObj;
         }
@@ -46,9 +55,18 @@ class deviceRecordsDAO {
             //await this.connect();
             const result =
                 await connection.query`SELECT * FROM presto1.device_records WHERE Id = ${id}`;
+            DataValidation.isEmpty(result.recordsets[0]);
             resultObj = { code: 200, queryResult: result.recordsets[0] };
         } catch (err) {
-            resultObj = { code: 500, message: err.message };
+            if (err.name == 'DataError') {
+                resultObj = {
+                    code: err.code,
+                    errorType: err.errorType,
+                    message: err.message,
+                };
+            } else {
+                resultObj = { code: 500, message: err.message };
+            }
         } finally {
             //await mssql.close();
             return resultObj;
@@ -70,9 +88,18 @@ class deviceRecordsDAO {
             //await this.connect();
             const result =
                 await connection.query`SELECT TOP 1 * FROM presto1.device_records WHERE OwnerId = ${id} ORDER BY CreatedAt DESC`;
+            DataValidation.isEmpty(result.recordsets[0]);
             resultObj = { code: 200, queryResult: result.recordsets[0] };
         } catch (err) {
-            resultObj = { code: 500, message: err.message };
+            if (err.name == 'DataError') {
+                resultObj = {
+                    code: err.code,
+                    errorType: err.errorType,
+                    message: err.message,
+                };
+            } else {
+                resultObj = { code: 500, message: err.message };
+            }
         } finally {
             //await mssql.close();
             return resultObj;
@@ -99,7 +126,6 @@ class deviceRecordsDAO {
             resultObj = { code: 200, queryResult: result.recordsets[0] };
         } catch (err) {
             if (err.name === 'DataError') {
-                console.log(err);
                 resultObj = {
                     code: err.code,
                     errorType: err.errorType,
@@ -110,7 +136,6 @@ class deviceRecordsDAO {
             }
         } finally {
             //await mssql.close();
-            console.log(resultObj);
             return resultObj;
         }
     }
@@ -129,9 +154,14 @@ class deviceRecordsDAO {
             //await this.connect();
             const result =
                 await connection.query`SELECT * FROM presto1.device_records WHERE OwnerId = ${id} ORDER BY CreatedAt DESC`;
+                DataValidation.isEmpty(result.recordsets[0]);
             resultObj = { code: 200, queryResult: result.recordsets[0] };
         } catch (err) {
-            resultObj = { code: 500, message: err.message };
+            if(err.name == 'DataError') {
+                resultObj = {code: err.code, errorType: err.errorType, message: err.message};
+            } else {
+                resultObj = { code: 500, message: err.message };
+            }
         } finally {
             //await mssql.close();
             return resultObj;
@@ -151,9 +181,14 @@ class deviceRecordsDAO {
             //await this.connect();
             const result =
                 await connection.query`SELECT * FROM presto1.device_records WHERE ParentDevice = ${id}`;
+            DataValidation.isEmpty(result.recordsets[0]);
             resultObj = { code: 200, queryResult: result.recordsets[0] };
         } catch (err) {
-            resultObj = { code: 500, message: err.message };
+            if(err.name == 'DataError') {
+                resultObj = {code: err.code, errorType: err.errorType, message: err.message};
+            } else {
+                resultObj = { code: 500, message: err.message };
+            }
         } finally {
             //await mssql.close();
             return resultObj;
@@ -173,7 +208,6 @@ class deviceRecordsDAO {
         try {
             //await this.connect();
             let location = body.location;
-            console.log(location);
             await connection.query`INSERT INTO presto1.device_records (ParentDevice, OwnerId, ReportedLost, DeviceLatitude, DeviceLongitude) VALUES (${
                 body.parent_device
             }, ${body.owner_id}, ${body.reported_lost}, ${

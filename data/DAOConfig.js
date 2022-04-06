@@ -1,7 +1,9 @@
 import 'dotenv/config';
 import mssql from 'mssql';
 
-
+/**
+ * @module data/DAOConfig
+ */
 export let config = {
     authentication: {
         options: {

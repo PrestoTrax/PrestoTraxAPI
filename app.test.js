@@ -281,17 +281,34 @@ describe('Device Record API tests', () => {
         expect(res.status).toBe(200);
     });
 
-    it('Gets info of a single specified record', async () => {
+    it('Gets info of a single specified record that does not exist', async () => {
         const res = await request(server).get('/records/2');
-        expect(res.status).toBe(200);
+        expect(res.status).toBe(404);
+        expect(res.body.errorType).toBe('DATA_NOT_FOUND');
+        expect(res.body.message).toBe('No data was returned from the database. The server is likely experiencing issues.');
+    });
+
+    it(`Gets all info of one user's devices from a user that does not exist`, async () => {
+        const res = await request(server).get('/records/user/0');
+        expect(res.status).toBe(404);
+        expect(res.body.errorType).toBe('DATA_NOT_FOUND');
+        expect(res.body.message).toBe('No data was returned from the database. The server is likely experiencing issues.');
     });
 
     it(`Gets all info of one user's devices`, async () => {
         const res = await request(server).get('/records/user/8');
         expect(res.status).toBe(200);
     });
-    it(`Gets all of one device's records`, async () => {
+
+    it(`Gets all of one device's records from a device that does not exist`, async () => {
         const res = await request(server).get('/records/device/8');
+        expect(res.status).toBe(404);
+        expect(res.body.errorType).toBe('DATA_NOT_FOUND');
+        expect(res.body.message).toBe('No data was returned from the database. The server is likely experiencing issues.');
+    });
+
+    it(`Gets all of one device's records from a device that does exist`, async () => {
+        const res = await request(server).get('/records/device/1');
         expect(res.status).toBe(200);
     });
 
