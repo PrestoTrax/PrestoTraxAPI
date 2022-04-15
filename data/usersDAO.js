@@ -22,12 +22,12 @@ class usersDAO {
     async authenticate(user) {
         let resultObj;
         try {
+            UserSecurity.userExists(user);
+
             const userResult = await this.getOneByUsername(user.username);
             const dbUser = userResult.queryResult[0];
-
-            UserSecurity.userExists(dbUser);
-
-            await UserSecurity.comparePassword(user.password, dbUser.Password);
+            
+            UserSecurity.comparePassword(user.password, dbUser.Password === null ? '' : dbUser.Password);
 
             resultObj = {
                 code: 200,
