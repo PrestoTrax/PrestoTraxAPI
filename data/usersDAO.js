@@ -24,10 +24,10 @@ class usersDAO {
         try {
             const userResult = await this.getOneByUsername(user.username);
             const dbUser = userResult.queryResult[0];
-            
+
             UserSecurity.userExists(dbUser);
 
-            UserSecurity.comparePassword(user.password, dbUser.Password);
+            await UserSecurity.comparePassword(user.password, dbUser.Password);
 
             resultObj = {
                 code: 200,
