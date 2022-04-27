@@ -18,8 +18,6 @@ let app = express();
 /**
  * server engine setup
  */
-app.set('views', path.join(process.cwd(), 'views'));
-app.set('view engine', 'pug');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

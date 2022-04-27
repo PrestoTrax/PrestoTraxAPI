@@ -32,6 +32,7 @@ class usersDAO {
             resultObj = {
                 code: 200,
                 message: 'Successfully authenticated user',
+                uuid: dbUser.Id,
             };
         } catch (err) {
             if (err.name === 'AuthFailedError') {

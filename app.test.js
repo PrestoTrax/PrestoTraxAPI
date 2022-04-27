@@ -34,7 +34,7 @@ describe('User API tests', () => {
             password: 'badtest',
         };
         const res = await request(server).post('/users/new').send(newUser);
-        expect(res.status).toBe(401);
+        expect(res.status).toBe(400);
         expect(res.body.errorType).toBe('PASSWORD_SHORT');
         expect(res.body.message).toBe(
             'Password must be at least 8 characters long'
@@ -48,7 +48,7 @@ describe('User API tests', () => {
             password: 'G00dP@ssw0rd',
         };
         const res = await request(server).post('/users/new').send(newUser);
-        expect(res.status).toBe(401);
+        expect(res.status).toBe(400);
         expect(res.body.errorType).toBe('USERNAME_SHORT');
         expect(res.body.message).toBe(
             'Username must be at least 4 characters long'
@@ -62,7 +62,7 @@ describe('User API tests', () => {
             password: 'GoodP@ssowrd',
         };
         const res = await request(server).post('/users/new').send(newUser);
-        expect(res.status).toBe(401);
+        expect(res.status).toBe(400);
         expect(res.body.errorType).toBe('NO_NUMBER');
         expect(res.body.message).toBe('Password must have a number');
     });
@@ -74,7 +74,7 @@ describe('User API tests', () => {
             password: 'G00dPassw0rd',
         };
         const res = await request(server).post('/users/new').send(newUser);
-        expect(res.status).toBe(401);
+        expect(res.status).toBe(400);
         expect(res.body.errorType).toBe('NO_SPECIAL_CHAR');
         expect(res.body.message).toBe('Password must have a special character');
     });
@@ -86,7 +86,7 @@ describe('User API tests', () => {
             password: 'b4dp@ssword',
         };
         const res = await request(server).post('/users/new').send(newUser);
-        expect(res.status).toBe(401);
+        expect(res.status).toBe(400);
         expect(res.body.errorType).toBe('NO_CAPITAL_LETTER');
         expect(res.body.message).toBe('Password must have a capital letter');
     });
@@ -98,7 +98,7 @@ describe('User API tests', () => {
             password: 'B4DP@SSWORD',
         };
         const res = await request(server).post('/users/new').send(newUser);
-        expect(res.status).toBe(401);
+        expect(res.status).toBe(400);
         expect(res.body.errorType).toBe('NO_LOWERCASE_LETTER');
         expect(res.body.message).toBe('Password must have a lowercase letter');
     });
@@ -109,7 +109,7 @@ describe('User API tests', () => {
             password: 'G00dP@ssw0rd',
         };
         const res = await request(server).post('/users/new').send(newUser);
-        expect(res.status).toBe(401);
+        expect(res.status).toBe(400);
         expect(res.body.errorType).toBe('USERNAME_NOT_FOUND');
         expect(res.body.message).toBe('No username input');
     });
@@ -120,14 +120,14 @@ describe('User API tests', () => {
             email: 'test@test.test',
         };
         const res = await request(server).post('/users/new').send(newUser);
-        expect(res.status).toBe(401);
+        expect(res.status).toBe(400);
         expect(res.body.errorType).toBe('PASSWORD_NOT_FOUND');
         expect(res.body.message).toBe('No password input');
     });
 
     it('Fails to add a user to the DB because the body contains no input', async () => {
         const res = await request(server).post('/users/new');
-        expect(res.status).toBe(401);
+        expect(res.status).toBe(400);
         expect(res.body.errorType).toBe('NO_USER_INFO');
         expect(res.body.message).toBe('No user input');
     });
