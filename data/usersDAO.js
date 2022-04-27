@@ -92,10 +92,13 @@ class usersDAO {
                     VALUES (${body.username},${body.email},${body.password}) 
             END`;
             UserValidation.validateUserExists(result.rowsAffected.length);
+            const result1 =
+                await connection.query`SELECT TOP 1 * FROM presto1.users ORDER BY CreatedAt DESC`;
+            console.log(result1.recordsets[0][0].Id);
             resultObj = {
                 code: 201, 
                 message: 'Successfully added user to DB',
-                uuid: result.rowsAffected[0].Id
+                uuid: result1.recordsets[0][0].Id,
                 };
         } catch (err) {
             if (err.name === 'ValidationFailedError') {
