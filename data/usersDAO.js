@@ -92,7 +92,11 @@ class usersDAO {
                     VALUES (${body.username},${body.email},${body.password}) 
             END`;
             UserValidation.validateUserExists(result.rowsAffected.length);
-            resultObj = { code: 201, message: 'Successfully added user to DB' };
+            resultObj = {
+                code: 201, 
+                message: 'Successfully added user to DB',
+                uuid: result.rowsAffected[0].Id
+                };
         } catch (err) {
             if (err.name === 'ValidationFailedError') {
                 resultObj = {
