@@ -85,13 +85,13 @@ class usersDAO {
             //console.log('here')
             body.password = await UserSecurity.encryptPassword(body.password);
             //console.log('here')
-            await connection.query`IF NOT EXISTS(SELECT 1 FROM presto1.users WHERE Username = ${body.username}) 
+            const result = await connection.query`IF NOT EXISTS(SELECT 1 FROM presto1.users WHERE Username = ${body.username}) 
             BEGIN 
                     INSERT INTO presto1.users 
                     (Username, Email, Password) 
                     VALUES (${body.username},${body.email},${body.password}) 
             END`;
-            //UserValidation.validateUserInfo(result.recordsets[0]);
+            UserValidation.validateUserExists(result.rowsAffected.length);
             resultObj = { code: 201, message: 'Successfully added user to DB' };
         } catch (err) {
             if (err.name === 'ValidationFailedError') {

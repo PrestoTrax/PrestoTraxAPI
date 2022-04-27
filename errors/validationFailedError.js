@@ -1,6 +1,13 @@
 //class that holds all failed validation errors
 export default class ValidationFailedError extends Error{
 
+    static userExistsError() {
+        this.code = 401;
+        this.errorType = 'USER_EXISTS';
+        this.message = 'A user already exists with that username';
+        return this;
+    }
+
     static passwordShortError() {
         this.code = 400;
         this.errorType = 'PASSWORD_SHORT';

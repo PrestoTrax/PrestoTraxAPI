@@ -17,10 +17,12 @@ export default class UserValidation {
     static validateUserInfo(user) {
 
         //if no information is provided when attempting to register, throw an error
-        if (user == undefined || user == null || user === {} || user === [] || (user.username == undefined && user.password == undefined && user.email == undefined)) {
+        if (user === undefined || user === null || user === {} || user === []) {
             //console.log('no info');
             throw ValidationFailedError.noInfoError();
         }
+
+       
 
         //if a username is not provided, throw an error
         if (user.username == undefined || user.username == '') {
@@ -127,7 +129,12 @@ export default class UserValidation {
         return false;
     }
 
-    
+    static validateUserExists(numAffectedRows) {
+        //if a user already exists with the same username, throw an error
+        if(numAffectedRows === 0){
+            throw ValidationFailedError.userExistsError();
+        }
+    }
 }
 
 
