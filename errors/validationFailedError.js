@@ -70,4 +70,11 @@ export default class ValidationFailedError extends Error{
         this.message = 'Password must have a number';
         return this;
     }
+
+    static invalidEmailError() {
+        this.code = 400;
+        this.errorType = 'INVALID_EMAIL';
+        this.message = 'Please enter a valid email address';
+        return this;
+    }
 }

@@ -1,7 +1,7 @@
 //const fs = require('fs');
 import { connection } from './DAOConfig.js';
 
-import UserValidation from '../security/userValidation.js';
+import UserValidation from '../validation/userValidation.js';
 import UserSecurity from '../security/userSecurity.js';
 
 //const helper = new HelperMethods();
@@ -94,7 +94,6 @@ class usersDAO {
             UserValidation.validateUserExists(result.rowsAffected.length);
             const result1 =
                 await connection.query`SELECT TOP 1 * FROM presto1.users ORDER BY CreatedAt DESC`;
-            console.log(result1.recordsets[0][0].Id);
             resultObj = {
                 code: 201, 
                 message: 'Successfully added user to DB',

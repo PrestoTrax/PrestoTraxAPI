@@ -132,6 +132,18 @@ describe('User API tests', () => {
         expect(res.body.message).toBe('No user input');
     });
 
+    it('Fails to add a user to the DB because the body contains an invalid email', async () => {
+        const newUser = {
+            username: 'Max1mus7',
+            email: 'test@test',
+            password: 'G00dP@ssw0rd',
+        };
+        const res = await request(server).post('/users/new').send(newUser);
+        expect(res.status).toBe(400);
+        expect(res.body.errorType).toBe('INVALID_EMAIL');
+        expect(res.body.message).toBe('Please enter a valid email address');
+    });
+
     it('Fails to authenticate a user because the user submitted invalid credentials', async () => {
         const user = {
             "username": "Mackslemus1",
@@ -158,7 +170,7 @@ describe('User API tests', () => {
     it('Successfully logs in as a user', async () => {
         const newUser = {
             username: 'Mackslemus1',
-            password: 'G00dP@ssw0rd',
+            password: 'GoodP@ssw0rd',
         };
         const res = await request(server).post('/users/login').send(newUser);
         expect(res.status).toBe(200);
@@ -296,7 +308,7 @@ describe('Device Record API tests', () => {
     });
 
     it(`Gets all info of one user's devices`, async () => {
-        const res = await request(server).get('/records/user/8');
+        const res = await request(server).get('/records/user/596');
         expect(res.status).toBe(200);
     });
 
@@ -314,7 +326,7 @@ describe('Device Record API tests', () => {
 
     it('Adds a device record to the DB', async () => {
         const newDevice = {
-            owner_id: 8,
+            owner_id: 596,
             parent_device: 1,
             reported_lost: 0,
             location: {

@@ -17,12 +17,10 @@ export default class UserValidation {
     static validateUserInfo(user) {
 
         //if no information is provided when attempting to register, throw an error
-        if (user === undefined || user === null || user === {} || user === []) {
+        if (user === undefined || user === null || user === {} || user === [] || (user.username === undefined && user.password === undefined && user.email === undefined)) {
             //console.log('no info');
             throw ValidationFailedError.noInfoError();
         }
-
-       
 
         //if a username is not provided, throw an error
         if (user.username == undefined || user.username == '') {
@@ -70,6 +68,10 @@ export default class UserValidation {
         if(!this.hasNumber(user.password)){
             //console.log('no number');
             throw ValidationFailedError.noNumberError();
+        }
+
+        if(!user.email.match(String.raw`[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}`)){
+            throw ValidationFailedError.invalidEmailError();
         }
     }
 

@@ -2,7 +2,7 @@
 //import HelperMethods from './helperMethods.js';
 //const fs = require('fs');
 import mssql from 'mssql';
-import DataValidation from '../security/dataValidation.js';
+import DataValidation from '../validation/dataValidation.js';
 import { connection } from './DAOConfig.js';
 
 //const poolConn = new mssql.ConnectionPool(config);
@@ -180,7 +180,7 @@ class deviceRecordsDAO {
         try {
             //await this.connect();
             const result =
-                await connection.query`SELECT * FROM presto1.device_records WHERE ParentDevice = ${id}`;
+                await connection.query`SELECT * FROM presto1.device_records WHERE ParentDevice = ${id} ORDER BY CreatedAt DESC`;
             DataValidation.isEmpty(result.recordsets[0]);
             resultObj = { code: 200, queryResult: result.recordsets[0] };
         } catch (err) {
@@ -208,11 +208,15 @@ class deviceRecordsDAO {
         try {
             //await this.connect();
             let location = body.location;
-            await connection.query`INSERT INTO presto1.device_records (ParentDevice, OwnerId, ReportedLost, DeviceLatitude, DeviceLongitude) VALUES (${
-                body.parent_device
-            }, ${body.owner_id}, ${body.reported_lost}, ${
-                location.latitude + ''
-            },${location.longitude + ''})`;
+            await connection.query`IF EXISTS(SELECT 1 FROM presto1.users WHERE Id = ${body.owner_id})
+            BEGIN
+                INSERT INTO presto1.device_records (ParentDevice, OwnerId, ReportedLost, DeviceLatitude, DeviceLongitude) 
+                VALUES (${
+                    body.parent_device
+                    }, ${body.owner_id}, ${body.reported_lost}, ${
+                    location.latitude + ''
+                    },${location.longitude + ''})
+            END`;
             resultObj = {
                 code: 201,
                 message: 'Successfully added device record to DB',
