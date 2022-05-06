@@ -7,7 +7,7 @@ import { connection } from './DAOConfig.js';
 class deviceInfoDAO {
     async getAll() {
         let resultObj;
-        try {
+        try { 
             const result =
                 await connection.query`SELECT * FROM presto1.device_info`;
             resultObj = { code: 200, queryResult: result.recordsets[0] };
