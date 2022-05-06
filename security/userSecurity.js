@@ -52,7 +52,7 @@ export default class UserSecurity {
      */
     static userExists(user) {
         if (user === undefined || user === null || user === [] || user.Username === undefined || user.Username === null || user.Password === undefined || user.Password === null) {
-            throw AuthFailedError.userNotFoundError();
+            throw AuthFailedError.invalidCredentialsError();
         }
         else {
             return true;
