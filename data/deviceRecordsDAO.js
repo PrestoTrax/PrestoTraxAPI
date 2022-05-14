@@ -217,7 +217,7 @@ class deviceRecordsDAO {
                     location.latitude + ''
                     },${location.longitude + ''})
             END`;
-            await connection.query`UPDATE presto1.device_info SET DeviceLatitude = ${location.latitude + ''}, DeviceLongitude = ${location.longitude + ''} WHERE Id = ${body.parent_device}`;
+            await connection.query`UPDATE presto1.device_info SET DeviceLatitude = ${location.latitude + ''}, DeviceLongitude = ${location.longitude + ''}, PingedAt = CURRENT_TIMESTAMP WHERE Id = ${body.parent_device}`;
             resultObj = {
                 code: 201,
                 message: 'Successfully added device record to DB',

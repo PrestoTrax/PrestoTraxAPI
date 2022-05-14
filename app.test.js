@@ -157,14 +157,11 @@ describe('User API tests', () => {
 
     it('Fails to authenticate a user that does not exist', async () => {
         const newUser = {
-            username: 'Mackslemus',
-            email: 'test@test.test',
-            password: 'badP@ss1',
         };
         const res = await request(server).post('/users/login').send(newUser);
         expect(res.status).toBe(401);
-        expect(res.body.errorType).toBe('USER_NOT_FOUND');
-        expect(res.body.message).toBe('User not found');
+        expect(res.body.errorType).toBe('INVALID_CREDENTIALS');
+        expect(res.body.message).toBe('Invalid username or password');
     });
 
     it('Successfully logs in as a user', async () => {
@@ -240,13 +237,13 @@ describe('Device Info API tests', () => {
     });
 
     it(`Gets all info of one user's devices`, async () => {
-        const res = await request(server).get('/devices/user/8');
+        const res = await request(server).get('/devices/user/575');
         expect(res.status).toBe(200);
     });
 
     it('Adds a device to the DB', async () => {
         const newDevice = {
-            owner_id: 8,
+            owner_id: 575,
             location: {
                 latitude: "33.512766",
                 longitude: "-112.126330",
@@ -260,7 +257,7 @@ describe('Device Info API tests', () => {
 
     it('Should update the recently created device within the DB', async () => {
         const updatedDevice = {
-            owner_id: '8',
+            owner_id: '575',
             location: {
                 latitude: "34.512766 / N 33° 30' 45.956",
                 longitude: "-113.126330 / W 112° 7' 34.786",
@@ -308,7 +305,7 @@ describe('Device Record API tests', () => {
     });
 
     it(`Gets all info of one user's devices`, async () => {
-        const res = await request(server).get('/records/user/596');
+        const res = await request(server).get('/records/user/575');
         expect(res.status).toBe(200);
     });
 
